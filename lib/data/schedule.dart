@@ -1,6 +1,8 @@
 import 'package:tasker/data/date_range.dart';
+import 'package:tasker/data/month.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
+import 'package:tasker/data/year_date.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
 
 sealed class Schedule {
@@ -242,5 +244,213 @@ class Weekly extends Schedule {
           (r) => r.contains(now.asTimeOfDay()),
         ) ??
         false;
+  }
+}
+
+class Monthly extends Schedule {
+  final Map<int, List<TimeOfDayRange>> occurences;
+  final DateRange range;
+
+  Monthly._unchecked({required this.occurences, required this.range});
+
+  factory Monthly({
+    required Map<int, List<TimeOfDayRange>> occurences,
+    required DateRange range,
+  }) {
+    assert(occurences.isNotEmpty);
+    assert(occurences.values.every((tod) => tod.isNotEmpty));
+    return Monthly._unchecked(occurences: occurences, range: range);
+  }
+
+  @override
+  bool isToday() {
+    final now = DateTime.now();
+    return occurences.keys.contains(now.day) && range.contains(now);
+  }
+
+  @override
+  DateTime? last() {
+    final now = DateTime.now();
+    DateTime candidateDay = DateTime(now.year, now.month, now.day);
+    MapEntry<int, List<TimeOfDayRange>>? targetOccurence = occurences.entries
+        .where(
+          (e) =>
+              e.key == candidateDay.day &&
+                  // If today then only get the occurences that have passed
+                  candidateDay.isToday()
+              ? e.value.any((r) => r.isBefore(now.asTimeOfDay()))
+              : true,
+        )
+        .firstOrNull;
+    while (targetOccurence == null) {
+      candidateDay = candidateDay.subtract(Duration(days: 1));
+      targetOccurence = occurences.entries
+          .where(
+            (e) => e.key == candidateDay.day && candidateDay.isToday()
+                ? e.value.any((r) => r.isBefore(now.asTimeOfDay()))
+                : true,
+          )
+          .firstOrNull;
+    }
+    final sortedRanges = targetOccurence.value
+      ..sort((a, b) => b.start.compareTo(a.start));
+    final firstRange = sortedRanges.firstWhere(
+      (sr) => candidateDay.isToday() ? sr.isBefore(now.asTimeOfDay()) : true,
+    );
+    final targetTime = candidateDay.copyWith(
+      hour: firstRange.start.hour,
+      minute: firstRange.start.minute,
+    );
+    return range.contains(targetTime) ? targetTime : null;
+  }
+
+  @override
+  DateTime? next() {
+    final now = DateTime.now();
+    DateTime candidateDay = DateTime(now.year, now.month, now.day);
+    MapEntry<int, List<TimeOfDayRange>>? targetOccurence = occurences.entries
+        .where(
+          (e) =>
+              e.key == candidateDay.day &&
+                  // If today then only get the occurences that haven't passed yet
+                  candidateDay.isToday()
+              ? e.value.any((r) => r.isAfter(now.asTimeOfDay()))
+              : true,
+        )
+        .firstOrNull;
+    while (targetOccurence == null) {
+      candidateDay = candidateDay.add(Duration(days: 1));
+      targetOccurence = occurences.entries
+          .where(
+            (e) => e.key == candidateDay.day && candidateDay.isToday()
+                ? e.value.any((r) => r.isAfter(now.asTimeOfDay()))
+                : true,
+          )
+          .firstOrNull;
+    }
+    final sortedRanges = targetOccurence.value
+      ..sort((a, b) => a.start.compareTo(b.start));
+    final firstRange = sortedRanges.firstWhere(
+      (sr) => candidateDay.isToday() ? sr.isAfter(now.asTimeOfDay()) : true,
+    );
+    final targetTime = candidateDay.copyWith(
+      hour: firstRange.start.hour,
+      minute: firstRange.start.minute,
+    );
+    return range.contains(targetTime) ? targetTime : null;
+  }
+
+  @override
+  bool occuringNow() {
+    if (!isToday()) {
+      return false;
+    }
+    final now = DateTime.now();
+    // Safe because check with isToday()
+    final ranges = occurences[now.day]!;
+    return ranges.any((r) => r.contains(now.asTimeOfDay()));
+  }
+}
+
+class Yearly extends Schedule {
+  final Map<YearDate, List<TimeOfDayRange>> occurences;
+  final DateRange range;
+
+  Yearly._unchecked({required this.occurences, required this.range});
+
+  factory Yearly({
+    required Map<YearDate, List<TimeOfDayRange>> occurences,
+    required DateRange range,
+  }) {
+    assert(occurences.isNotEmpty);
+    assert(occurences.values.every((tod) => tod.isNotEmpty));
+    return Yearly._unchecked(occurences: occurences, range: range);
+  }
+
+  @override
+  bool isToday() {
+    final now = DateTime.now();
+    final todayYearDate = now.asYearDate();
+    return occurences.entries.any((e) => e.key == todayYearDate) &&
+        range.contains(now);
+  }
+
+  @override
+  DateTime? last() {
+    final now = DateTime.now();
+    final nowYearDate = YearDate(
+      day: now.day,
+      month: Month.fromMonthOfYear(now.month),
+    );
+    final prevYearDate = occurences.keys.prevBefore(
+      nowYearDate,
+      predicate: (yd) => yd.isToday()
+          // if year date is today then only take the occurences that already have happened
+          ? occurences[yd]?.any((occ) => occ.isBefore(now.asTimeOfDay())) ??
+                false
+          : true,
+    );
+    if (prevYearDate == null) return null;
+    final ranges = occurences[prevYearDate]!;
+    ranges.sort((a, b) => b.start.compareTo(a.start));
+    final prevRange = ranges
+        .where(
+          (r) => prevYearDate.isToday() ? r.isBefore(now.asTimeOfDay()) : true,
+        )
+        .firstOrNull;
+    if (prevRange == null) return null;
+    final prevDateTime = DateTime(
+      !prevYearDate.isBefore(nowYearDate) ? now.year : now.year - 1,
+      prevYearDate.month.monthOfYear(),
+      prevYearDate.day,
+      prevRange.start.hour,
+      prevRange.start.minute,
+    );
+    return prevDateTime;
+  }
+
+  @override
+  DateTime? next() {
+    final now = DateTime.now();
+    final nowYearDate = YearDate(
+      day: now.day,
+      month: Month.fromMonthOfYear(now.month),
+    );
+    final nextYearDate = occurences.keys.nextAfter(
+      nowYearDate,
+      predicate: (yd) => yd.isToday()
+          // if year date is today then only take the occurences that haven't happened yet
+          ? occurences[yd]?.any((occ) => occ.isAfter(now.asTimeOfDay())) ??
+                false
+          : true,
+    );
+    if (nextYearDate == null) return null;
+    final ranges = occurences[nextYearDate]!;
+    ranges.sort((a, b) => a.start.compareTo(b.start));
+    final nextRange = ranges
+        .where(
+          (r) => nextYearDate.isToday() ? r.isAfter(now.asTimeOfDay()) : true,
+        )
+        .firstOrNull;
+    if (nextRange == null) return null;
+    final nextDateTime = DateTime(
+      !nextYearDate.isBefore(nowYearDate) ? now.year : now.year + 1,
+      nextYearDate.month.monthOfYear(),
+      nextYearDate.day,
+      nextRange.start.hour,
+      nextRange.start.minute,
+    );
+    return nextDateTime;
+  }
+
+  @override
+  bool occuringNow() {
+    final now = DateTime.now();
+    if (!isToday()) {
+      return false;
+    }
+    return occurences[now.asYearDate()]!.any(
+      (r) => r.contains(now.asTimeOfDay()),
+    );
   }
 }

@@ -31,4 +31,12 @@ class TimeOfDayRange {
 
   bool contains(TimeOfDay timeOfDay) =>
        _isAllDay || (!timeOfDay.isBefore(start) && !timeOfDay.isAfter(end));
+
+  bool isBefore(TimeOfDay timeOfDay) => !_isAllDay && _end.isBefore(timeOfDay);
+  
+  bool isAfter(TimeOfDay timeOfDay) => !_isAllDay && _start.isAfter(timeOfDay);
+
+
 }
+
+
