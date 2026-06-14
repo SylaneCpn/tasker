@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tasker/utils/date_time_extensions.dart';
 
 class TimeOfDayRange {
   TimeOfDay _start;
   TimeOfDay get start => _start;
   TimeOfDay _end;
   TimeOfDay get end => _end;
+  Duration get duration => _end.asDateTime().difference(_start.asDateTime());
   bool _isAllDay;
   bool get isAllDay => _isAllDay;
 
@@ -26,17 +28,13 @@ class TimeOfDayRange {
   factory TimeOfDayRange.allDay() {
     final start = TimeOfDay(hour: 0, minute: 0);
     final end = TimeOfDay(hour: 23, minute: 59);
-    return TimeOfDayRange._(start: start, end: end , isAllDay: true);
+    return TimeOfDayRange._(start: start, end: end, isAllDay: true);
   }
 
   bool contains(TimeOfDay timeOfDay) =>
-       _isAllDay || (!timeOfDay.isBefore(start) && !timeOfDay.isAfter(end));
+      _isAllDay || (!timeOfDay.isBefore(start) && !timeOfDay.isAfter(end));
 
   bool isBefore(TimeOfDay timeOfDay) => !_isAllDay && _end.isBefore(timeOfDay);
-  
+
   bool isAfter(TimeOfDay timeOfDay) => !_isAllDay && _start.isAfter(timeOfDay);
-
-
 }
-
-

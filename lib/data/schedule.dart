@@ -32,42 +32,53 @@ sealed class Schedule {
   }
 }
 
-class OneTime extends Schedule {
-  DateTime time;
-  TimeOfDayRange range;
+class DiscreteOccurences extends Schedule {
+  final Map<DateTime,  Duration> occurences;
+  DiscreteOccurences._unchecked({required this.occurences});
 
-  OneTime({
+  DiscreteOccurences({required this.occurences}) {
+    assert(occurences.isNotEmpty);
+  }
+
+  DiscreteOccurences.once({
     required int year,
     int month = 1,
     int day = 1,
-    TimeOfDayRange? range,
-  }) : time = DateTime(year, month, day),
-       range = range ?? TimeOfDayRange.allDay();
+    Duration? range,
+  }) : this._unchecked(
+         occurences: {
+           DateTime(year, month, day): range ?? Duration(hours: 24),
+         },
+       );
 
   @override
   DateTime? next() {
     final now = DateTime.now();
-    final deadLine = time.copyWithTimeOfDay(range.end);
-    return deadLine.isAfter(now) ? deadLine : null;
+    final afterNow = occurences.entries.where((e) => e.key.isAfter(now)).toList()..sort((a,b) => a.key.compareTo(b.key));
+    return afterNow.firstOrNull?.key;
   }
 
   @override
   bool isToday() {
     final now = DateTime.now();
-    return now.isSameDay(time);
+    return occurences.entries.any((e) => now.isSameDay(e.key));
   }
 
   @override
   DateTime? last() {
     final now = DateTime.now();
-    final deadLine = time.copyWithTimeOfDay(range.end);
-    return deadLine.isAfter(now) ? deadLine : null;
+    final beforeNow = occurences.entries.where((e) => e.key.isBefore(now)).toList()..sort((a,b) => b.key.compareTo(a.key));
+    return beforeNow.firstOrNull?.key;
   }
 
   @override
   bool occuringNow() {
     final now = DateTime.now();
-    return now.isSameDay(time) && range.contains(now.asTimeOfDay());
+    return occurences.entries.any((e) {
+      final range = DateRange( start : e.key , duration :e.value);
+      return range.contains(now);
+
+    });
   }
 }
 

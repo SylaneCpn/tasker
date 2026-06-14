@@ -26,3 +26,10 @@ extension IsToday on DateTime {
     return isSameDay(now); 
   }
 }
+
+extension AsDateTime on TimeOfDay {
+  DateTime asDateTime({int? year , int? month , int? day}) {
+    final now = DateTime.now();
+    return DateTime(year ?? now.year , month ?? now.month , day ?? now.day , hour , minute);
+  }
+}

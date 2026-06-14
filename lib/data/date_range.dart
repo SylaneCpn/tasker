@@ -1,11 +1,10 @@
 class DateRange {
   DateTime start;
-  DateTime end;
+  Duration duration;
+  DateTime get end => start.add(duration);
 
-  DateRange({DateTime? start, required this.end})
-    : start = start ?? DateTime.now() {
-      assert(!this.start.isAfter(end));
-    }
+  DateRange({DateTime? start, required this.duration})
+    : start = start ?? DateTime.now();
 
 
 
