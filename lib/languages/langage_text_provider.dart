@@ -56,4 +56,6 @@ class LangageTextProvider extends ChangeNotifier {
   Locale get currentLocale => _locale;
   String get homeLabel => _textes?["homeLabel"] ?? "Home";
   String get taskLabel => _textes?["taskLabel"] ?? "Tasks";
+  String get calendarLabel => _textes?["calendarLabel"] ?? "Calendar";
+  String get optionsLabel => _textes?["optionsLabel"] ?? "Options";
 }

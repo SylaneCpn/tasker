@@ -4,6 +4,7 @@ import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
+import "package:tasker/utils/duration_parse.dart";
 
 sealed class Schedule {
   /// Next time the schedule meets
@@ -30,14 +31,42 @@ sealed class Schedule {
 
     return null;
   }
+
+  static Schedule fromJson(Map<String, Object?> json) {
+    final type = json["type"] as String?;
+    final data = json["data"] as Map<String, Object?>?;
+    return switch (type) {
+      "discrete_occurences" => DiscreteOccurences.fromJson(data ?? {}),
+      _ => throw FormatException(
+        "Could not parse Schedule : Invalid type : $type",
+      ),
+    };
+  }
 }
 
 class DiscreteOccurences extends Schedule {
-  final Map<DateTime,  Duration> occurences;
+  final Map<DateTime, Duration> occurences;
   DiscreteOccurences._unchecked({required this.occurences});
 
   DiscreteOccurences({required this.occurences}) {
     assert(occurences.isNotEmpty);
+  }
+
+  factory DiscreteOccurences.fromJson(Map<String, Object?> json) {
+    final occurences = <DateTime, Duration>{};
+    try {
+      for (final MapEntry(:key, :value) in json.entries) {
+        final date = DateTime.parse(key);
+        final duration = parseDuration(value as String);
+        occurences[date] = duration;
+      }
+
+      return DiscreteOccurences(occurences: occurences);
+    } on Exception catch (e) {
+      throw FormatException(
+        "Could not parse DiscreteOccurences from $json because : $e",
+      );
+    }
   }
 
   DiscreteOccurences.once({
@@ -46,15 +75,15 @@ class DiscreteOccurences extends Schedule {
     int day = 1,
     Duration? range,
   }) : this._unchecked(
-         occurences: {
-           DateTime(year, month, day): range ?? Duration(hours: 24),
-         },
+         occurences: {DateTime(year, month, day): range ?? Duration(hours: 24)},
        );
 
   @override
   DateTime? next() {
     final now = DateTime.now();
-    final afterNow = occurences.entries.where((e) => e.key.isAfter(now)).toList()..sort((a,b) => a.key.compareTo(b.key));
+    final afterNow =
+        occurences.entries.where((e) => e.key.isAfter(now)).toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
     return afterNow.firstOrNull?.key;
   }
 
@@ -67,7 +96,9 @@ class DiscreteOccurences extends Schedule {
   @override
   DateTime? last() {
     final now = DateTime.now();
-    final beforeNow = occurences.entries.where((e) => e.key.isBefore(now)).toList()..sort((a,b) => b.key.compareTo(a.key));
+    final beforeNow =
+        occurences.entries.where((e) => e.key.isBefore(now)).toList()
+          ..sort((a, b) => b.key.compareTo(a.key));
     return beforeNow.firstOrNull?.key;
   }
 
@@ -75,9 +106,8 @@ class DiscreteOccurences extends Schedule {
   bool occuringNow() {
     final now = DateTime.now();
     return occurences.entries.any((e) {
-      final range = DateRange( start : e.key , duration :e.value);
+      final range = DateRange(start: e.key, duration: e.value);
       return range.contains(now);
-
     });
   }
 }
@@ -87,6 +117,11 @@ class Weekly extends Schedule {
   final DateRange range;
 
   Weekly._unchecked({required this.occurences, required this.range});
+
+  factory Weekly.fromJson(Map<String , Object?> map) {
+    //Todo
+    throw ArgumentError();
+  }
 
   factory Weekly({
     required Map<Weekday, List<TimeOfDayRange>> occurences,

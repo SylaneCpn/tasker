@@ -8,6 +8,18 @@ class YearDate implements Comparable<YearDate> {
   // ignore: unused_field
   final bool _isLeap;
 
+  factory YearDate.parse(String str) {
+    try {
+      final [day , monthAsInt ] = str.split(":").map(int.parse).toList();
+      return YearDate(day: day, month: Month.fromMonthOfYear(monthAsInt) , year:  garranteedLeapYear);
+
+    }
+
+    on Exception catch (e) {
+      throw FormatException("Could not parse YearDate from $str because $e");
+    }
+  }
+
   // ignore: unused_element
   const YearDate._unchecked({
     required this.month,
@@ -47,6 +59,8 @@ class YearDate implements Comparable<YearDate> {
     final nowAsYearDate = YearDate(day: now.day, month: Month.fromMonthOfYear(now.month));
     return nowAsYearDate == this;
   }
+
+  String serialize() => "$day:${month.monthOfYear()}";
 }
 
 extension NextAfterDate on Iterable<YearDate> {

@@ -1,4 +1,6 @@
 {
     "homeLabel" : "Acceuil",
-    "taskLabel" : "Tâches"
+    "taskLabel" : "Tâches",
+    "calendarLabel" : "Calendrier",
+    "optionsLabel" : "Paramètres"
 }
