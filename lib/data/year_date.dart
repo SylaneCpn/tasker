@@ -6,8 +6,6 @@ import 'package:tasker/utils/leap_year.dart';
 class YearDate implements Comparable<YearDate> {
   final Month month;
   final int day;
-  // ignore: unused_field
-  final bool _isLeap;
 
   static Result<YearDate , FormatException> parse(String str) {
     try {
@@ -17,7 +15,7 @@ class YearDate implements Comparable<YearDate> {
     }
 
     on Exception catch (e) {
-      throw Err(FormatException("Could not parse YearDate from $str because $e"));
+      return Err(FormatException("Could not parse YearDate from $str because $e"));
     }
   }
 
@@ -25,12 +23,11 @@ class YearDate implements Comparable<YearDate> {
   const YearDate._unchecked({
     required this.month,
     required this.day,
-    required bool isLeap,
-  }) : _isLeap = isLeap;
+  });
 
   YearDate({required this.day, required this.month, int? year})
-    : _isLeap = isLeapYear(year ?? DateTime.now().year) {
-    assert(month.numberOfDays(year ?? DateTime.now().year) >= day && day > 0);
+     {
+    assert(month.numberOfDays(year ?? garranteedLeapYear) >= day && day > 0);
   }
 
   YearDate copyWith({Month? month, int? day, int? year}) =>
