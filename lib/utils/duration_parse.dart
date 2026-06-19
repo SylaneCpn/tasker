@@ -1,6 +1,8 @@
 
-  /// Based from [Duration.toString()]
-Duration parseDuration(String str) {
+  import 'package:result/result.dart';
+
+/// Based from [Duration.toString()]
+Result<Duration, FormatException> parseDuration(String str) {
     try {
       final [hours, minutes, seconds, microseconds] = str
           .split(":")
@@ -12,16 +14,16 @@ Duration parseDuration(String str) {
       final actualSeconds = seconds;
       final actualMillis = microseconds ~/ 1000;
       final actualMicros = microseconds % 1000;
-      return Duration(
+      return Ok(Duration(
         days: actualDays,
         hours: actualHours,
         minutes: actualMinutes,
         seconds: actualSeconds,
         milliseconds: actualMillis,
         microseconds: actualMicros,
-      );
+      ));
     } on Exception {
-      throw FormatException("Could not get a valid Duration from $str");
+      return  Err(FormatException("Could not get a valid Duration from $str"));
     }
   }
 

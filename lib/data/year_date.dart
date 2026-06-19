@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:result/result.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/utils/leap_year.dart';
 
@@ -8,15 +10,15 @@ class YearDate implements Comparable<YearDate> {
   // ignore: unused_field
   final bool _isLeap;
 
-  factory YearDate.parse(String str) {
+  static Result<YearDate , FormatException> parse(String str) {
     try {
       final [day , monthAsInt ] = str.split(":").map(int.parse).toList();
-      return YearDate(day: day, month: Month.fromMonthOfYear(monthAsInt) , year:  garranteedLeapYear);
+      return Ok(YearDate(day: day, month: Month.fromMonthOfYear(monthAsInt) , year:  garranteedLeapYear));
 
     }
 
     on Exception catch (e) {
-      throw FormatException("Could not parse YearDate from $str because $e");
+      throw Err(FormatException("Could not parse YearDate from $str because $e"));
     }
   }
 
@@ -54,11 +56,12 @@ class YearDate implements Comparable<YearDate> {
   bool isBefore(YearDate candidate) => compareTo(candidate) < 0;
   bool isAfter(YearDate candidate) => compareTo(candidate) > 0;
 
-  bool isToday() {
-    final now = DateTime.now();
-    final nowAsYearDate = YearDate(day: now.day, month: Month.fromMonthOfYear(now.month));
-    return nowAsYearDate == this;
+  bool isSameDayAs(DateTime dateTime) {
+    final toCompAsYearDate = YearDate(day: dateTime.day, month: Month.fromMonthOfYear(dateTime.month));
+    return toCompAsYearDate == this;
   }
+
+  bool isToday() => isSameDayAs(DateTime.now());
 
   String serialize() => "$day:${month.monthOfYear()}";
 }

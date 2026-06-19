@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   provider: ^6.1.5+1
   workmanager: ^0.9.0+3
+  result:
+    git : https://github.com/SylaneCpn/result.git
 
 dev_dependencies:
   flutter_test:

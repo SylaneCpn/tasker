@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:result/result.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/utils/serialize_time_of_day.dart';
 
@@ -32,19 +33,19 @@ class TimeOfDayRange {
     return TimeOfDayRange._unchecked(start: start, end: end, isAllDay: true);
   }
 
-  factory TimeOfDayRange.parse(String str) {
+  static Result<TimeOfDayRange, FormatException> parse(String str) {
     try {
       final [start, end] = str.split("-").map(parseTimeOfDay).toList();
       if (end.asDateTime().difference(start.asDateTime()) ==
           Duration(hours: 23, minutes: 59)) {
-        return TimeOfDayRange.allDay();
+        return Ok(TimeOfDayRange.allDay());
       }
 
-      return TimeOfDayRange(start: start, end: end);
+      return Ok(TimeOfDayRange(start: start, end: end));
     } on Exception catch (e) {
-      throw FormatException(
+      return Err(FormatException(
         "Could not parse TimeOfDayRangeFrom $str because $e",
-      );
+      ));
     }
   }
 

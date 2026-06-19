@@ -1,3 +1,4 @@
+import 'package:result/result.dart';
 import 'package:tasker/utils/duration_parse.dart';
 
 class DateRange {
@@ -9,14 +10,14 @@ class DateRange {
     : start = start ?? DateTime.now();
 
 
-  factory DateRange.parse(String str)  {
+  static Result<DateRange , FormatException> parse(String str)  {
     try {
       final [start , duration] = str.split("+");
-      return DateRange(start : DateTime.parse(start) , duration: parseDuration(duration) );
+      return Ok(DateRange(start : DateTime.parse(start) , duration: parseDuration(duration).unwrap() ));
     }
 
     on Exception catch (e) {
-      throw FormatException("Could not parse DateRange from $str  because $e");
+      throw Err(FormatException("Could not parse DateRange from $str  because $e"));
     }
     
   }

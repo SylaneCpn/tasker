@@ -1,10 +1,11 @@
+import 'package:result/result.dart';
 import 'package:tasker/data/date_range.dart';
 import 'package:tasker/data/month.dart';
+import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
-import "package:tasker/utils/duration_parse.dart";
 
 sealed class Schedule {
   /// Next time the schedule meets
@@ -14,6 +15,21 @@ sealed class Schedule {
   DateTime? last();
   bool isToday();
   bool occuringNow();
+
+  Iterable<TaskInstance> instancesForDay({
+    required int year,
+    required Month month,
+    required int day,
+  });
+
+  Iterable<TaskInstance> instancesToday() {
+    final now = DateTime.now();
+    return instancesForDay(
+      year: now.year,
+      month: Month.fromMonthOfYear(now.year),
+      day: now.day,
+    );
+  }
 
   Duration? sinceLast() {
     final lastTime = last();
@@ -32,39 +48,42 @@ sealed class Schedule {
     return null;
   }
 
-  static Schedule fromJson(Map<String, Object?> json) {
+  static Result<Schedule, FormatException> fromJson(Map<String, Object?> json) {
     final type = json["type"] as String?;
     final data = json["data"] as Map<String, Object?>?;
     return switch (type) {
       "discrete_occurences" => DiscreteOccurences.fromJson(data ?? {}),
-      _ => throw FormatException(
-        "Could not parse Schedule : Invalid type : $type",
+      _ => Err(
+        FormatException("Could not parse Schedule : Invalid type : $type"),
       ),
     };
   }
 }
 
 class DiscreteOccurences extends Schedule {
-  final Map<DateTime, Duration> occurences;
+  final Set<TaskInstance> occurences;
   DiscreteOccurences._unchecked({required this.occurences});
 
   DiscreteOccurences({required this.occurences}) {
     assert(occurences.isNotEmpty);
   }
 
-  factory DiscreteOccurences.fromJson(Map<String, Object?> json) {
-    final occurences = <DateTime, Duration>{};
+  static Result<DiscreteOccurences, FormatException> fromJson(
+    Map<String, Object?> json,
+  ) {
+    final occurences = <TaskInstance>{};
     try {
-      for (final MapEntry(:key, :value) in json.entries) {
-        final date = DateTime.parse(key);
-        final duration = parseDuration(value as String);
-        occurences[date] = duration;
+      for (final occurence in json["data"] as List) {
+        final taskInstanceAsString = occurence as String;
+        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrap());
       }
 
-      return DiscreteOccurences(occurences: occurences);
+      return Ok(DiscreteOccurences(occurences: occurences));
     } on Exception catch (e) {
-      throw FormatException(
-        "Could not parse DiscreteOccurences from $json because : $e",
+      return Err(
+        FormatException(
+          "Could not parse DiscreteOccurences from $json because : $e",
+        ),
       );
     }
   }
@@ -73,43 +92,57 @@ class DiscreteOccurences extends Schedule {
     required int year,
     int month = 1,
     int day = 1,
-    Duration? range,
+    Duration? duration,
   }) : this._unchecked(
-         occurences: {DateTime(year, month, day): range ?? Duration(hours: 24)},
+         occurences: {
+           duration != null
+               ? TaskInstance(
+                   start: DateTime(year, month, day),
+                   duration: duration,
+                 )
+               : TaskInstance.tillEndOfDay(start: DateTime(year, month, day)),
+         },
        );
 
   @override
   DateTime? next() {
     final now = DateTime.now();
-    final afterNow =
-        occurences.entries.where((e) => e.key.isAfter(now)).toList()
-          ..sort((a, b) => a.key.compareTo(b.key));
-    return afterNow.firstOrNull?.key;
+    final afterNow = occurences.where((e) => e.start.isAfter(now)).toList()
+      ..sort((a, b) => a.start.compareTo(b.start));
+    return afterNow.firstOrNull?.start;
   }
 
   @override
   bool isToday() {
     final now = DateTime.now();
-    return occurences.entries.any((e) => now.isSameDay(e.key));
+    return occurences.any((e) => now.isSameDay(e.start));
   }
 
   @override
   DateTime? last() {
     final now = DateTime.now();
-    final beforeNow =
-        occurences.entries.where((e) => e.key.isBefore(now)).toList()
-          ..sort((a, b) => b.key.compareTo(a.key));
-    return beforeNow.firstOrNull?.key;
+    final beforeNow = occurences.where((e) => e.end.isBefore(now)).toList()
+      ..sort((a, b) => b.start.compareTo(a.start));
+    return beforeNow.firstOrNull?.start;
   }
 
   @override
   bool occuringNow() {
     final now = DateTime.now();
-    return occurences.entries.any((e) {
-      final range = DateRange(start: e.key, duration: e.value);
+    return occurences.any((e) {
+      final range = DateRange(start: e.start, duration: e.duration);
       return range.contains(now);
     });
   }
+
+  @override
+  Iterable<TaskInstance> instancesForDay({
+    required int year,
+    required Month month,
+    required int day,
+  }) => occurences.where(
+    (occ) => occ.start.isSameDay(DateTime(year, month.monthOfYear(), day)),
+  );
 }
 
 class Weekly extends Schedule {
@@ -118,7 +151,7 @@ class Weekly extends Schedule {
 
   Weekly._unchecked({required this.occurences, required this.range});
 
-  factory Weekly.fromJson(Map<String , Object?> map) {
+  static Result<Weekly, FormatException> fromJson(Map<String, Object?> map) {
     //Todo
     throw ArgumentError();
   }
@@ -291,6 +324,31 @@ class Weekly extends Schedule {
         ) ??
         false;
   }
+
+  @override
+  Iterable<TaskInstance> instancesForDay({
+    required int year,
+    required Month month,
+    required int day,
+  }) {
+    final dateTime = DateTime(year, month.monthOfYear(), day);
+    return occurences.entries
+        .where(
+          (e) =>
+              e.key.dayOfWeek() == dateTime.weekday && range.contains(dateTime),
+        )
+        .expand(
+          (e) => e.value.map(
+            (r) => TaskInstance(
+              start: dateTime.copyWith(
+                hour: r.start.hour,
+                minute: r.start.minute,
+              ),
+              duration: r.duration,
+            ),
+          ),
+        );
+  }
 }
 
 class Monthly extends Schedule {
@@ -396,6 +454,28 @@ class Monthly extends Schedule {
     final ranges = occurences[now.day]!;
     return ranges.any((r) => r.contains(now.asTimeOfDay()));
   }
+
+  @override
+  Iterable<TaskInstance> instancesForDay({
+    required int year,
+    required Month month,
+    required int day,
+  }) {
+    final dateTime = DateTime(year, month.monthOfYear(), day);
+    return occurences.entries
+        .where((e) => e.key == dateTime.day && range.contains(dateTime))
+        .expand(
+          (e) => e.value.map(
+            (r) => TaskInstance(
+              start: dateTime.copyWith(
+                hour: r.start.hour,
+                minute: r.start.minute,
+              ),
+              duration: r.duration,
+            ),
+          ),
+        );
+  }
 }
 
 class Yearly extends Schedule {
@@ -498,5 +578,27 @@ class Yearly extends Schedule {
     return occurences[now.asYearDate()]!.any(
       (r) => r.contains(now.asTimeOfDay()),
     );
+  }
+
+  @override
+  Iterable<TaskInstance> instancesForDay({
+    required int year,
+    required Month month,
+    required int day,
+  }) {
+    final dateTime = DateTime(year, month.monthOfYear(), day);
+    return occurences.entries
+        .where((e) => e.key.isSameDayAs(dateTime) && range.contains(dateTime))
+        .expand(
+          (e) => e.value.map(
+            (r) => TaskInstance(
+              start: dateTime.copyWith(
+                hour: r.start.hour,
+                minute: r.start.minute,
+              ),
+              duration: r.duration,
+            ),
+          ),
+        );
   }
 }
