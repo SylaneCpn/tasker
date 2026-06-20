@@ -3,6 +3,7 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/meta/serializable.dart';
 
 import 'package:tasker/utils/json_serializable.dart';
+import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 
 @serializable
@@ -33,7 +34,7 @@ class DailyTasksStatus with JsonSerializable {
         final taskId = int.parse(doneEntry.key);
         final instances = (doneEntry.value as List)
             .map(
-              (inst) => TaskInstance.parse(inst).unwrapOrElse((e) => throw e),
+              (inst) => TaskInstance.parse(inst).unwrapOrThrow(),
             )
             .toList();
         done[taskId] = instances;

@@ -8,6 +8,7 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
+import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 import 'package:test/test.dart';
 import 'package:tasker/data/schedule.dart';
 
@@ -36,7 +37,7 @@ void main() {
       await outputFile.writeAsString(asJsonString);
       final deserialized = DiscreteOccurences.fromJson(
         json.decode(await outputFile.readAsString()),
-      ).unwrapOrElse((e) => throw e);
+      ).unwrapOrThrow();
       expect(disOcc.occurences, deserialized.occurences);
     });
 
@@ -65,7 +66,7 @@ void main() {
       await outputFile.writeAsString(asJsonString);
       final _ = Weekly.fromJson(
         json.decode(await outputFile.readAsString()),
-      ).unwrapOrElse((e) => throw e);
+      ).unwrapOrThrow();
 
 
     });
@@ -95,7 +96,7 @@ void main() {
       await outputFile.writeAsString(asJsonString);
       final _ = Monthly.fromJson(
         json.decode(await outputFile.readAsString()),
-      ).unwrapOrElse((e) => throw e);
+      ).unwrapOrThrow();
     });
 
     test("Serialize then Deserialize Yearly", () async {
@@ -123,7 +124,7 @@ void main() {
       await outputFile.writeAsString(asJsonString);
       final _ = Yearly.fromJson(
         json.decode(await outputFile.readAsString()),
-      ).unwrapOrElse((e) => throw e);
+      ).unwrapOrThrow();
     });
 
     test("Deserialize w/ factory Schedule constructor", () async {

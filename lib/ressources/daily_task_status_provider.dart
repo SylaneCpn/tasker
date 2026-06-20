@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart' as path_prov;
 import 'package:result/result.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
+import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 
 const appDailyStatusPath = "data/persistance/daily_status.json";
@@ -24,7 +25,7 @@ Future<Result<DailyTasksStatus, Exception>>
       final jsonContent = json.decode(content);
       final fileDailyContent = DailyTasksStatus.fromJson(
         jsonContent,
-      ).unwrapOrElse((e) => throw e);
+      ).unwrapOrThrow();
 
       // It's the same day, provide it to the user
       if (fileDailyContent.date.isToday()) {

@@ -2,6 +2,7 @@
 
 import 'package:result/result.dart';
 import 'package:tasker/utils/duration_parse.dart';
+import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 /// An instance of a task
 /// With an DateTime as start time and a Duration
@@ -34,7 +35,7 @@ class TaskInstance {
     try {
       final [startDateAsString, durationAsString] = str.split("+");
       final start = DateTime.parse(startDateAsString);
-      final duration = parseDuration(durationAsString).unwrapOrElse((e) => throw e);
+      final duration = parseDuration(durationAsString).unwrapOrThrow();
       return Ok(TaskInstance(start: start, duration: duration));
     } on Exception catch (e) {
       return Err(

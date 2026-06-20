@@ -8,6 +8,7 @@ import 'package:tasker/data/year_date.dart';
 import 'package:tasker/meta/serializable.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/utils/json_serializable.dart';
+import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 @serializable
 sealed class Schedule with JsonSerializable {
@@ -84,7 +85,7 @@ class DiscreteOccurences extends Schedule {
     try {
       for (final occurence in json["data"] as List) {
         final taskInstanceAsString = occurence as String;
-        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrapOrElse((e) => throw e));
+        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrapOrThrow());
       }
 
       return Ok(DiscreteOccurences(occurences: occurences));
@@ -184,13 +185,13 @@ class Weekly extends Schedule {
       for (final occurence in occurences.entries) {
         final weekday = Weekday.fromDayOfWeek(int.parse(occurence.key));
         final timeOfDayRanges = (occurence.value as List)
-            .map((elem) => TimeOfDayRange.parse(elem).unwrap())
+            .map((elem) => TimeOfDayRange.parse(elem).unwrapOrThrow())
             .toList();
         weekdayMap[weekday] = timeOfDayRanges;
       }
 
       return Ok(
-        Weekly(occurences: weekdayMap, range: DateRange.parse(range).unwrap()),
+        Weekly(occurences: weekdayMap, range: DateRange.parse(range).unwrapOrThrow()),
       );
     } on Exception catch (e) {
       return Err(
@@ -440,14 +441,14 @@ class Monthly extends Schedule {
       for (final occurence in rawOccurencesMap.entries) {
         final dayOfMonth = int.parse(occurence.key);
         final timeOfDayRanges = (occurence.value as List)
-            .map((r) => TimeOfDayRange.parse(r).unwrap())
+            .map((r) => TimeOfDayRange.parse(r).unwrapOrThrow())
             .toList();
         occurences[dayOfMonth] = timeOfDayRanges;
       }
       return Ok(
         Monthly(
           occurences: occurences,
-          range: DateRange.parse(rangeAsString).unwrap(),
+          range: DateRange.parse(rangeAsString).unwrapOrThrow(),
         ),
       );
     } on Exception catch (e) {
@@ -613,16 +614,16 @@ class Yearly extends Schedule {
       final rawOccurencesMap = data["occurences"] as Map<String, Object?>;
       final occurences = <YearDate, List<TimeOfDayRange>>{};
       for (final occurence in rawOccurencesMap.entries) {
-        final yearDate = YearDate.parse(occurence.key).unwrapOrElse((e) => throw e);
+        final yearDate = YearDate.parse(occurence.key).unwrapOrThrow();
         final timeOfDayRanges = (occurence.value as List)
-            .map((r) => TimeOfDayRange.parse(r).unwrapOrElse((e) => throw e))
+            .map((r) => TimeOfDayRange.parse(r).unwrapOrThrow())
             .toList();
         occurences[yearDate] = timeOfDayRanges;
       }
       return Ok(
         Yearly(
           occurences: occurences,
-          range: DateRange.parse(rangeAsString).unwrapOrElse((e) => throw e),
+          range: DateRange.parse(rangeAsString).unwrapOrThrow(),
         ),
       );
     } on Exception catch (e) {

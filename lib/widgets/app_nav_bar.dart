@@ -15,6 +15,8 @@ class AppNavBar extends StatelessWidget {
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: languageProvider.homeLabel),
         BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: languageProvider.taskLabel),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month) , label : languageProvider.calendarLabel),
+        BottomNavigationBarItem(icon: Icon(Icons.settings) , label: languageProvider.optionsLabel)
       ],
       onTap:(value) => switchToIndexCallBack?.call(value),
       currentIndex: currentIndex,
