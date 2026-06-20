@@ -5,7 +5,7 @@
 Result<Duration, FormatException> parseDuration(String str) {
     try {
       final [hours, minutes, seconds, microseconds] = str
-          .split(":")
+          .split(RegExp(r"[:.]"))
           .map(int.parse)
           .toList();
       final actualDays = hours ~/ 24;

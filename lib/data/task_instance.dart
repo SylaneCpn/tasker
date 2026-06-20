@@ -34,7 +34,7 @@ class TaskInstance {
     try {
       final [startDateAsString, durationAsString] = str.split("+");
       final start = DateTime.parse(startDateAsString);
-      final duration = parseDuration(durationAsString).unwrap();
+      final duration = parseDuration(durationAsString).unwrapOrElse((e) => throw e);
       return Ok(TaskInstance(start: start, duration: duration));
     } on Exception catch (e) {
       return Err(

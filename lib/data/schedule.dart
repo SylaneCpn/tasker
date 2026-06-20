@@ -5,9 +5,12 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
+import 'package:tasker/meta/serializable.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
+import 'package:tasker/utils/json_serializable.dart';
 
-sealed class Schedule {
+@serializable
+sealed class Schedule with JsonSerializable {
   /// Next time the schedule meets
   DateTime? next();
 
@@ -50,17 +53,23 @@ sealed class Schedule {
 
   static Result<Schedule, FormatException> fromJson(Map<String, Object?> json) {
     final type = json["type"] as String?;
-    final data = json["data"] as Map<String, Object?>?;
     return switch (type) {
-      "discrete_occurences" => DiscreteOccurences.fromJson(data ?? {}),
+      DiscreteOccurences.typeIdentifier => DiscreteOccurences.fromJson(json),
+      Weekly.typeIdentifier => Weekly.fromJson(json),
+      Monthly.typeIdentifier => Monthly.fromJson(json),
+      Yearly.typeIdentifier => Yearly.fromJson(json),
       _ => Err(
         FormatException("Could not parse Schedule : Invalid type : $type"),
       ),
     };
   }
+
 }
 
+@serializable
 class DiscreteOccurences extends Schedule {
+  static const typeIdentifier = "discrete_occurences";
+
   final Set<TaskInstance> occurences;
   DiscreteOccurences._unchecked({required this.occurences});
 
@@ -75,7 +84,7 @@ class DiscreteOccurences extends Schedule {
     try {
       for (final occurence in json["data"] as List) {
         final taskInstanceAsString = occurence as String;
-        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrap());
+        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrapOrElse((e) => throw e));
       }
 
       return Ok(DiscreteOccurences(occurences: occurences));
@@ -86,6 +95,17 @@ class DiscreteOccurences extends Schedule {
         ),
       );
     }
+  }
+
+  @override
+  Map<String, Object?> toJson() {
+    final asJson = <String, Object?>{"type": typeIdentifier};
+    final dataList = <String>[];
+    for (final occurence in occurences) {
+      dataList.add(occurence.serialize());
+    }
+    asJson["data"] = dataList;
+    return asJson;
   }
 
   DiscreteOccurences.once({
@@ -130,7 +150,7 @@ class DiscreteOccurences extends Schedule {
   bool occuringNow() {
     final now = DateTime.now();
     return occurences.any((e) {
-      final range = DateRange(start: e.start, duration: e.duration);
+      final range = DateRange(start: e.start, end: e.end);
       return range.contains(now);
     });
   }
@@ -145,15 +165,57 @@ class DiscreteOccurences extends Schedule {
   );
 }
 
+@serializable
 class Weekly extends Schedule {
+  static const typeIdentifier = "weekly";
+
   final Map<Weekday, List<TimeOfDayRange>> occurences;
   final DateRange range;
 
   Weekly._unchecked({required this.occurences, required this.range});
 
-  static Result<Weekly, FormatException> fromJson(Map<String, Object?> map) {
-    //Todo
-    throw ArgumentError();
+  static Result<Weekly, FormatException> fromJson(Map<String, Object?> json) {
+    try {
+      final data = json["data"] as Map<String, Object?>;
+      final range = data["range"] as String;
+      final occurences = data["occurences"] as Map<String, Object?>;
+
+      final weekdayMap = <Weekday, List<TimeOfDayRange>>{};
+      for (final occurence in occurences.entries) {
+        final weekday = Weekday.fromDayOfWeek(int.parse(occurence.key));
+        final timeOfDayRanges = (occurence.value as List)
+            .map((elem) => TimeOfDayRange.parse(elem).unwrap())
+            .toList();
+        weekdayMap[weekday] = timeOfDayRanges;
+      }
+
+      return Ok(
+        Weekly(occurences: weekdayMap, range: DateRange.parse(range).unwrap()),
+      );
+    } on Exception catch (e) {
+      return Err(
+        FormatException("Could not parse Weekly from $json because $e"),
+      );
+    }
+  }
+
+  @override
+  Map<String, Object?> toJson() {
+    final asJson = <String, Object?>{"type": typeIdentifier};
+    final data = <String, Object?>{};
+    data["range"] = range.serialize();
+    final occurencesMap = <String, Object?>{};
+    for (final occurence in occurences.entries) {
+      final weekdayAsString = occurence.key.dayOfWeek().toString();
+      final timeOfDayRanges = occurence.value
+          .map((r) => r.serialize())
+          .toList();
+      occurencesMap[weekdayAsString] = timeOfDayRanges;
+    }
+
+    data["occurences"] = occurencesMap;
+    asJson["data"] = data;
+    return asJson;
   }
 
   factory Weekly({
@@ -351,7 +413,10 @@ class Weekly extends Schedule {
   }
 }
 
+@serializable
 class Monthly extends Schedule {
+  static const typeIdentifier = "monthly";
+
   final Map<int, List<TimeOfDayRange>> occurences;
   final DateRange range;
 
@@ -364,6 +429,51 @@ class Monthly extends Schedule {
     assert(occurences.isNotEmpty);
     assert(occurences.values.every((tod) => tod.isNotEmpty));
     return Monthly._unchecked(occurences: occurences, range: range);
+  }
+
+  static Result<Monthly, FormatException> fromJson(Map<String, Object?> json) {
+    try {
+      final data = json["data"] as Map<String, Object?>;
+      final rangeAsString = data["range"] as String;
+      final rawOccurencesMap = data["occurences"] as Map<String, Object?>;
+      final occurences = <int, List<TimeOfDayRange>>{};
+      for (final occurence in rawOccurencesMap.entries) {
+        final dayOfMonth = int.parse(occurence.key);
+        final timeOfDayRanges = (occurence.value as List)
+            .map((r) => TimeOfDayRange.parse(r).unwrap())
+            .toList();
+        occurences[dayOfMonth] = timeOfDayRanges;
+      }
+      return Ok(
+        Monthly(
+          occurences: occurences,
+          range: DateRange.parse(rangeAsString).unwrap(),
+        ),
+      );
+    } on Exception catch (e) {
+      return Err(
+        FormatException("Could not parse Monthly from $json because $e"),
+      );
+    }
+  }
+
+  @override
+  Map<String, Object?> toJson() {
+    final asJson = <String, Object?>{"type": typeIdentifier};
+    final data = <String, Object?>{};
+    data["range"] = range.serialize();
+    final occurencesMap = <String, Object?>{};
+    for (final occurence in occurences.entries) {
+      final dayOfMonth = occurence.key.toString();
+      final timeOfDayRanges = occurence.value
+          .map((r) => r.serialize())
+          .toList();
+      occurencesMap[dayOfMonth] = timeOfDayRanges;
+    }
+
+    data["occurences"] = occurencesMap;
+    asJson["data"] = data;
+    return asJson;
   }
 
   @override
@@ -478,7 +588,10 @@ class Monthly extends Schedule {
   }
 }
 
+@serializable
 class Yearly extends Schedule {
+  static const typeIdentifier = "yearly";
+
   final Map<YearDate, List<TimeOfDayRange>> occurences;
   final DateRange range;
 
@@ -491,6 +604,51 @@ class Yearly extends Schedule {
     assert(occurences.isNotEmpty);
     assert(occurences.values.every((tod) => tod.isNotEmpty));
     return Yearly._unchecked(occurences: occurences, range: range);
+  }
+
+  static Result<Yearly, FormatException> fromJson(Map<String, Object?> json) {
+    try {
+      final data = json["data"] as Map<String, Object?>;
+      final rangeAsString = data["range"] as String;
+      final rawOccurencesMap = data["occurences"] as Map<String, Object?>;
+      final occurences = <YearDate, List<TimeOfDayRange>>{};
+      for (final occurence in rawOccurencesMap.entries) {
+        final yearDate = YearDate.parse(occurence.key).unwrapOrElse((e) => throw e);
+        final timeOfDayRanges = (occurence.value as List)
+            .map((r) => TimeOfDayRange.parse(r).unwrapOrElse((e) => throw e))
+            .toList();
+        occurences[yearDate] = timeOfDayRanges;
+      }
+      return Ok(
+        Yearly(
+          occurences: occurences,
+          range: DateRange.parse(rangeAsString).unwrapOrElse((e) => throw e),
+        ),
+      );
+    } on Exception catch (e) {
+      return Err(
+        FormatException("Could not parse Monthly from $json because $e"),
+      );
+    }
+  }
+
+  @override
+  Map<String, Object?> toJson() {
+    final asJson = <String, Object?>{"type": typeIdentifier};
+    final data = <String, Object?>{};
+    data["range"] = range.serialize();
+    final occurencesMap = <String, Object?>{};
+    for (final occurence in occurences.entries) {
+      final dayOfYear = occurence.key.serialize();
+      final timeOfDayRanges = occurence.value
+          .map((r) => r.serialize())
+          .toList();
+      occurencesMap[dayOfYear] = timeOfDayRanges;
+    }
+
+    data["occurences"] = occurencesMap;
+    asJson["data"] = data;
+    return asJson;
   }
 
   @override
@@ -601,4 +759,6 @@ class Yearly extends Schedule {
           ),
         );
   }
+  
+  
 }

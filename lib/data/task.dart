@@ -1,5 +1,7 @@
 import 'package:tasker/data/schedule.dart';
+import 'package:tasker/meta/serializable.dart';
 
+@serializable
 class Task {
   String label;
   String description;

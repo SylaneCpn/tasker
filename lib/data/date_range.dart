@@ -1,35 +1,30 @@
 import 'package:result/result.dart';
-import 'package:tasker/utils/duration_parse.dart';
 
 class DateRange {
-  DateTime start;
-  Duration duration;
-  DateTime get end => start.add(duration);
+  final DateTime start;
+  Duration get duration => end.difference(start);
+  final DateTime end;
 
-  DateRange({DateTime? start, required this.duration})
+  DateRange({DateTime? start, required this.end})
     : start = start ?? DateTime.now();
 
-
-  static Result<DateRange , FormatException> parse(String str)  {
+  static Result<DateRange, FormatException> parse(String str) {
     try {
-      final [start , duration] = str.split("+");
-      return Ok(DateRange(start : DateTime.parse(start) , duration: parseDuration(duration).unwrap() ));
+      final [start, end] = str.split("/");
+      return Ok(
+        DateRange(start: DateTime.parse(start), end: DateTime.parse(end)),
+      );
+    } on Exception catch (e) {
+      throw Err(
+        FormatException("Could not parse DateRange from $str  because $e"),
+      );
     }
-
-    on Exception catch (e) {
-      throw Err(FormatException("Could not parse DateRange from $str  because $e"));
-    }
-    
   }
-
-
 
   String serialize() {
-    return "$start+$duration";
+    return "$start/$end";
   }
 
-
-
-  bool contains(DateTime dateTime) => !dateTime.isBefore(start) && !dateTime.isAfter(end);
-  
+  bool contains(DateTime dateTime) =>
+      !dateTime.isBefore(start) && !dateTime.isAfter(end);
 }

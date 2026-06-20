@@ -7,28 +7,30 @@ class YearDate implements Comparable<YearDate> {
   final Month month;
   final int day;
 
-  static Result<YearDate , FormatException> parse(String str) {
+  static Result<YearDate, FormatException> parse(String str) {
     try {
-      final [day , monthAsInt ] = str.split(":").map(int.parse).toList();
-      return Ok(YearDate(day: day, month: Month.fromMonthOfYear(monthAsInt) , year:  garranteedLeapYear));
-
-    }
-
-    on Exception catch (e) {
-      return Err(FormatException("Could not parse YearDate from $str because $e"));
+      final [day, monthAsInt] = str.split(":").map(int.parse).toList();
+      return Ok(
+        YearDate(
+          day: day,
+          month: Month.fromMonthOfYear(monthAsInt),
+          year: garranteedLeapYear,
+        ),
+      );
+    } on Exception catch (e) {
+      return Err(
+        FormatException("Could not parse YearDate from $str because $e"),
+      );
     }
   }
 
   // ignore: unused_element
-  const YearDate._unchecked({
-    required this.month,
-    required this.day,
-  });
+  const YearDate._unchecked({required this.month, required this.day});
 
-  YearDate({required this.day, required this.month, int? year})
-     {
+  YearDate({required this.day, required this.month, int? year}) {
     assert(month.numberOfDays(year ?? garranteedLeapYear) >= day && day > 0);
   }
+
 
   YearDate copyWith({Month? month, int? day, int? year}) =>
       YearDate(month: month ?? this.month, day: day ?? this.day, year: year);
@@ -53,7 +55,10 @@ class YearDate implements Comparable<YearDate> {
   bool isAfter(YearDate candidate) => compareTo(candidate) > 0;
 
   bool isSameDayAs(DateTime dateTime) {
-    final toCompAsYearDate = YearDate(day: dateTime.day, month: Month.fromMonthOfYear(dateTime.month));
+    final toCompAsYearDate = YearDate(
+      day: dateTime.day,
+      month: Month.fromMonthOfYear(dateTime.month),
+    );
     return toCompAsYearDate == this;
   }
 
@@ -64,8 +69,12 @@ class YearDate implements Comparable<YearDate> {
 
 extension NextAfterDate on Iterable<YearDate> {
   YearDate? nextAfter(YearDate yearDate, {bool Function(YearDate)? predicate}) {
-    final after = where((yd) => yd.compareTo(yearDate) >= 0 && (predicate?.call(yd) ?? true)).toList()..sort();
-    final before = where((yd) => yd.compareTo(yearDate) < 0 && (predicate?.call(yd) ?? true)).toList()..sort();
+    final after = where(
+      (yd) => yd.compareTo(yearDate) >= 0 && (predicate?.call(yd) ?? true),
+    ).toList()..sort();
+    final before = where(
+      (yd) => yd.compareTo(yearDate) < 0 && (predicate?.call(yd) ?? true),
+    ).toList()..sort();
     if (after.isNotEmpty) {
       return after.first;
     }
@@ -74,9 +83,23 @@ extension NextAfterDate on Iterable<YearDate> {
 }
 
 extension PrevBeforeDate on Iterable<YearDate> {
-  YearDate? prevBefore(YearDate yearDate, {bool Function(YearDate)? predicate}) {
-    final after = where((yd) => yd.compareTo(yearDate) > 0 && (predicate?.call(yd) ?? true)).toList()..sort()..reversed;
-    final before = where((yd) => yd.compareTo(yearDate) <= 0 && (predicate?.call(yd) ?? true)).toList()..sort()..reversed;
+  YearDate? prevBefore(
+    YearDate yearDate, {
+    bool Function(YearDate)? predicate,
+  }) {
+    final after =
+        where(
+            (yd) => yd.compareTo(yearDate) > 0 && (predicate?.call(yd) ?? true),
+          ).toList()
+          ..sort()
+          ..reversed;
+    final before =
+        where(
+            (yd) =>
+                yd.compareTo(yearDate) <= 0 && (predicate?.call(yd) ?? true),
+          ).toList()
+          ..sort()
+          ..reversed;
     if (before.isNotEmpty) {
       return before.first;
     }
