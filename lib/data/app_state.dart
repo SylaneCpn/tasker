@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-class AppState  extends ChangeNotifier{
+class AppState  with ChangeNotifier{
   final String name = "namePlaceholder";
 }

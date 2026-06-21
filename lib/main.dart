@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
 import 'package:tasker/style/theme.dart' as theme;
 import 'package:tasker/widgets/page_switcher.dart';
+import 'package:tasker/widgets/task_data_provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -17,7 +18,7 @@ class MainApp extends StatelessWidget {
       theme: theme.appThemeData ,
       home: ChangeNotifierProvider(
         create: (context) => LangageTextProvider(),
-        child: const PageSwitcher(),
+        child: const TaskDataProvider(),
       ),
     );
   }

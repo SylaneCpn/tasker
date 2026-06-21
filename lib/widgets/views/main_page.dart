@@ -14,7 +14,7 @@ class MainPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.0),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("Hello User !", textScaler: TextScaler.linear(4.0)),
+              child: Text("Hello User !", style: Theme.of(context).textTheme.headlineLarge,),
             ),
           ),
         ],
