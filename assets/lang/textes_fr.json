@@ -2,5 +2,9 @@
     "homeLabel" : "Acceuil",
     "taskLabel" : "Tâches",
     "calendarLabel" : "Calendrier",
-    "optionsLabel" : "Paramètres"
+    "optionsLabel" : "Paramètres",
+    "couldNotFetch" : "Une erreur s'est produite, le fichier n'a pas pu être récupéré.",
+    "dataNotFetchedYet" : "De la donnée va être récupéré sur l'appareil.",
+    "fetchingData" : "En attente de données...",
+    "retry" : "Réessayez"
 }

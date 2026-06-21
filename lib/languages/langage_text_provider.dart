@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,8 @@ class LangageTextProvider extends ChangeNotifier {
 
   Locale _locale;
   Map<String, String?>? _textes;
+
+  UnmodifiableMapView<String, String?> get rawTextes => .new(_textes ?? {});
 
   LangageTextProvider._(this._locale);
 
@@ -43,19 +46,24 @@ class LangageTextProvider extends ChangeNotifier {
         utf8.decode(Uint8List.sublistView(bytes)),
       );
       return asJson.cast();
-    } on Exception{
+    } on Exception {
       // print(e);
       return {};
     }
   }
 
-  void _notifyListeners() {
-    notifyListeners();
-  }
+  String? _txt(String key) => _textes?[key];
+
+  void _notifyListeners() => notifyListeners();
 
   Locale get currentLocale => _locale;
-  String get homeLabel => _textes?["homeLabel"] ?? "Home";
-  String get taskLabel => _textes?["taskLabel"] ?? "Tasks";
-  String get calendarLabel => _textes?["calendarLabel"] ?? "Calendar";
-  String get optionsLabel => _textes?["optionsLabel"] ?? "Options";
+  String get homeLabel => _txt("homeLabel") ?? "Home";
+  String get taskLabel => _txt("taskLabel") ?? "Tasks";
+  String get calendarLabel => _txt("calendarLabel") ?? "Calendar";
+  String get optionsLabel => _txt("optionsLabel") ?? "Options";
+  String get couldNotFetch => _txt("couldNotFetch") ?? "An Error occured, the file could not be fetched";
+  String get dataNotFetchedYet => _txt("dataNotFetchedYet") ?? "Data is about to be fetched on the device";
+  String get fetchingData => _txt("fetchingData") ?? "Waiting for data...";
+  String get retry => _txt("retry") ?? "Retry";
+  
 }
