@@ -1,0 +1,2 @@
+class OutOfIdsError  extends Error {
+}

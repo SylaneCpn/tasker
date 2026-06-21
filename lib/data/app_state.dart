@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tasker/meta/serializable.dart';
+import 'package:tasker/utils/json_serializable.dart';
 
-class AppState  with ChangeNotifier{
-  final String name = "namePlaceholder";
+@serializable
+class AppState  with ChangeNotifier , JsonSerializable{
+  final String? name = "SylaneCpn";
+  
+  @override
+  Map<String, Object?> toJson() {
+    // TODO: implement toJson
+    throw UnimplementedError();
+  }
 }

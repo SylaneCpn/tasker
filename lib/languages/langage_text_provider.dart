@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-class LangageTextProvider extends ChangeNotifier {
+class LangageTextProvider with ChangeNotifier {
   static const defaultLocale = Locale("en");
   static const nameSpace = "lang";
   static const filePrefix = "textes";
@@ -65,5 +65,6 @@ class LangageTextProvider extends ChangeNotifier {
   String get dataNotFetchedYet => _txt("dataNotFetchedYet") ?? "Data is about to be fetched on the device";
   String get fetchingData => _txt("fetchingData") ?? "Waiting for data...";
   String get retry => _txt("retry") ?? "Retry";
+  String get hello => _txt("hello") ?? "Hello,";
   
 }

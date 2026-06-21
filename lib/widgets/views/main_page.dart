@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tasker/widgets/commons/elevated_container.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets.dart.dart';
+import 'package:tasker/widgets/views/main_page_widgets/greetings_card.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -8,15 +9,11 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        mainAxisSize: .min,
+        spacing: 32.0,
+        mainAxisAlignment: .center,
         children: [
-          ElevatedContainer(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text("Hello User !", style: Theme.of(context).textTheme.headlineLarge,),
-            ),
-          ),
+          Align(alignment: .topLeft, child: const GreetingsCard()),
+          const DailyTasksWidget(),
         ],
       ),
     );
