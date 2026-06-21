@@ -29,3 +29,22 @@ Future<Result<TasksWrapper, Exception>> getTasksfromAppDirectory() async {
     );
   }
 }
+
+Future<Result<(), Exception>> storeTaskWrapperToAppDirectory(TasksWrapper wrapper) async {
+
+    try {
+      final appRessourceDirectory = await path_prov
+          .getApplicationSupportDirectory();
+      final filePath = "${appRessourceDirectory.path}/$appTaskWrapperPath";
+      final wrapperAsJson = wrapper.toJson();
+      final wrapperAsString = json.encode(wrapperAsJson);
+      // Prevent error when called just before closing the app
+      File(filePath).writeAsStringSync(wrapperAsString);
+      return Ok(());
+    }
+
+    on Exception catch(e) {
+      return Err(Exception("Could not store TaskWrapper to app directory because $e"));
+    }
+
+  }

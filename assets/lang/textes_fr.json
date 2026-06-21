@@ -7,5 +7,6 @@
     "dataNotFetchedYet" : "De la donnée va être récupéré sur l'appareil.",
     "fetchingData" : "En attente de données...",
     "retry" : "Réessayez",
-    "hello" : "Bonjour,"
+    "hello" : "Bonjour,",
+    "emptyDailyTask" : "Pas de tâches pour aujourd'hui !"
 }

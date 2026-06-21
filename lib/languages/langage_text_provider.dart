@@ -61,10 +61,13 @@ class LangageTextProvider with ChangeNotifier {
   String get taskLabel => _txt("taskLabel") ?? "Tasks";
   String get calendarLabel => _txt("calendarLabel") ?? "Calendar";
   String get optionsLabel => _txt("optionsLabel") ?? "Options";
-  String get couldNotFetch => _txt("couldNotFetch") ?? "An Error occured, the file could not be fetched";
-  String get dataNotFetchedYet => _txt("dataNotFetchedYet") ?? "Data is about to be fetched on the device";
+  String get couldNotFetch =>
+      _txt("couldNotFetch") ??
+      "An Error occured, the file could not be fetched";
+  String get dataNotFetchedYet =>
+      _txt("dataNotFetchedYet") ?? "Data is about to be fetched on the device";
   String get fetchingData => _txt("fetchingData") ?? "Waiting for data...";
   String get retry => _txt("retry") ?? "Retry";
   String get hello => _txt("hello") ?? "Hello,";
-  
+  String get emptyDailyTask => _txt("emptyDailyTask") ?? "No tasks for today !";
 }

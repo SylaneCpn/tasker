@@ -41,3 +41,22 @@ Future<Result<DailyTasksStatus, Exception>>
       );
     }
   }
+
+  Future<Result<(), Exception>> storeDailyTaskStatusToAppDirectory(DailyTasksStatus status) async {
+
+    try {
+      final appRessourceDirectory = await path_prov
+          .getApplicationSupportDirectory();
+      final filePath = "${appRessourceDirectory.path}/$appDailyStatusPath";
+      final statusAsJson = status.toJson();
+      final statusAsString = json.encode(statusAsJson);
+      // Prevent error when called just before closing the app
+      File(filePath).writeAsStringSync(statusAsString);
+      return Ok(());
+    }
+
+    on Exception catch(e) {
+      return Err(Exception("Could not store DailyTaskStatus to app directory because $e"));
+    }
+
+  }
