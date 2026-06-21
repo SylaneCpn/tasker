@@ -50,11 +50,13 @@ class TasksWrapper with JsonSerializable {
   UnmodifiableListView<Task> get tasks => .new(_tasks);
   void add({
     required String description,
+    required bool notifies,
     required String label,
     required Schedule schedule,
   }) => _tasks.add(
     Task(
       id: _nextId(),
+      notifies: notifies,
       label: label,
       description: description,
       schedule: schedule,
