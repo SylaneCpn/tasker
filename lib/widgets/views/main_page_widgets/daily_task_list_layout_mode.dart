@@ -1,0 +1,4 @@
+enum DailyTaskListLayoutMode {
+  chronologicalOrder,
+  doneLast
+}

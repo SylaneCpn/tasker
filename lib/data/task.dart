@@ -1,10 +1,10 @@
 import 'package:result/result.dart';
 import 'package:tasker/data/schedule.dart';
-import 'package:tasker/meta/serializable.dart';
+import 'package:tasker/meta/deserializable.dart';
 import 'package:tasker/utils/json_serializable.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
-@serializable
+@deserializable
 class Task with JsonSerializable {
   final int id;
   bool notifies;

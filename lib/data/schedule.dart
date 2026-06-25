@@ -5,12 +5,12 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
-import 'package:tasker/meta/serializable.dart';
+import 'package:tasker/meta/deserializable.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/utils/json_serializable.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
-@serializable
+@deserializable
 sealed class Schedule with JsonSerializable {
   /// Next time the schedule meets
   DateTime? next();
@@ -30,9 +30,27 @@ sealed class Schedule with JsonSerializable {
     final now = DateTime.now();
     return instancesForDay(
       year: now.year,
-      month: Month.fromMonthOfYear(now.year),
+      month: Month.fromMonthOfYear(now.month),
       day: now.day,
     );
+  }
+
+  TaskInstance? firstInstanceOfTheDay({
+    required int year,
+    required Month month,
+    required int day,
+  }) {
+    final sortedInstances = instancesForDay(
+      year: year,
+      month: month,
+      day: day,
+    ).toList()..sort((a, b) => a.start.compareTo(b.start));
+    return sortedInstances.firstOrNull;
+  }
+
+  TaskInstance? firstInstanceToday() {
+    final DateTime(:year , :month , :day) = DateTime.now();
+    return firstInstanceOfTheDay(year: year, month: Month.fromMonthOfYear(month), day: day);
   }
 
   Duration? sinceLast() {
@@ -64,10 +82,9 @@ sealed class Schedule with JsonSerializable {
       ),
     };
   }
-
 }
 
-@serializable
+@deserializable
 class DiscreteOccurences extends Schedule {
   static const typeIdentifier = "discrete_occurences";
 
@@ -85,7 +102,9 @@ class DiscreteOccurences extends Schedule {
     try {
       for (final occurence in json["data"] as List) {
         final taskInstanceAsString = occurence as String;
-        occurences.add(TaskInstance.parse(taskInstanceAsString).unwrapOrThrow());
+        occurences.add(
+          TaskInstance.parse(taskInstanceAsString).unwrapOrThrow(),
+        );
       }
 
       return Ok(DiscreteOccurences(occurences: occurences));
@@ -166,7 +185,7 @@ class DiscreteOccurences extends Schedule {
   );
 }
 
-@serializable
+@deserializable
 class Weekly extends Schedule {
   static const typeIdentifier = "weekly";
 
@@ -191,7 +210,10 @@ class Weekly extends Schedule {
       }
 
       return Ok(
-        Weekly(occurences: weekdayMap, range: DateRange.parse(range).unwrapOrThrow()),
+        Weekly(
+          occurences: weekdayMap,
+          range: DateRange.parse(range).unwrapOrThrow(),
+        ),
       );
     } on Exception catch (e) {
       return Err(
@@ -414,7 +436,7 @@ class Weekly extends Schedule {
   }
 }
 
-@serializable
+@deserializable
 class Monthly extends Schedule {
   static const typeIdentifier = "monthly";
 
@@ -589,7 +611,7 @@ class Monthly extends Schedule {
   }
 }
 
-@serializable
+@deserializable
 class Yearly extends Schedule {
   static const typeIdentifier = "yearly";
 
@@ -760,6 +782,4 @@ class Yearly extends Schedule {
           ),
         );
   }
-  
-  
 }

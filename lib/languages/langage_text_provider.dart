@@ -70,4 +70,7 @@ class LangageTextProvider with ChangeNotifier {
   String get retry => _txt("retry") ?? "Retry";
   String get hello => _txt("hello") ?? "Hello,";
   String get emptyDailyTask => _txt("emptyDailyTask") ?? "No tasks for today !";
+  String get done => _txt("done") ?? "Done";
+  String get occuring => _txt("occuring") ?? "Occuring";
+  String get incomming => _txt("incomming") ?? "Incomming";
 }

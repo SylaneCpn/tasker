@@ -8,5 +8,8 @@
     "fetchingData" : "En attente de données...",
     "retry" : "Réessayez",
     "hello" : "Bonjour,",
-    "emptyDailyTask" : "Pas de tâches pour aujourd'hui !"
+    "emptyDailyTask" : "Pas de tâches pour aujourd'hui !",
+    "done" : "Terminé",
+    "occuring" : "En cours",
+    "incomming" : "A venir"
 }

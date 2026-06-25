@@ -1,12 +1,12 @@
 import 'package:result/result.dart';
 import 'package:tasker/data/task_instance.dart';
-import 'package:tasker/meta/serializable.dart';
+import 'package:tasker/meta/deserializable.dart';
 
 import 'package:tasker/utils/json_serializable.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 
-@serializable
+@deserializable
 class DailyTasksStatus with JsonSerializable {
   
 
