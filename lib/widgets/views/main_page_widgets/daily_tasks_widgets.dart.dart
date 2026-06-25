@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
-import 'package:tasker/data/tasks_wrapper.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/widgets/views/main_page_widgets/daily_task_list_layout_mode.dart';
@@ -85,52 +84,55 @@ class _DailyTasksListState extends State<DailyTasksList> {
         ),
       );
       final langTextProv = context.watch<LangageTextProvider>();
-      final sectionStyle = Theme.of(context).textTheme.headlineMedium;
-    return Column(
-      children: [
-        Align(
-          alignment: .centerRight,
-          child: InkWell(
-            onTap: toggleLayoutMode,
-            child: Icon(
-              Icons.sort,
-              color: layout == .doneLast ? Colors.blue : Colors.grey,
+      final sectionStyle = Theme.of(context).textTheme.headlineSmall;
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          Align(
+            alignment: .centerRight,
+            child: InkWell(
+              onTap: toggleLayoutMode,
+              child: Icon(
+                Icons.sort,
+                color: layout == .doneLast ? Colors.blue : Colors.grey,
+              ),
             ),
           ),
-        ),
-        switch (layout) {
-          .chronologicalOrder => Column(
-            children: orderd
-                .map((dt) => DailyTaskCard(task: dt, status: widget.status))
-                .toList(),
-          ),
-          .doneLast => Column(
-            children: [
-              Column(
-                children: [
-                  Align(alignment: .centerLeft, child: Text(langTextProv.occuring, style: sectionStyle,)),
-                  ...orderd.where((t) => t.schedule.occuringNow()).map((t) => DailyTaskCard(task: t, status: widget.status))
-                ],
-              ),
-
-              Column(
-                children: [
-                  Align(alignment: .centerLeft, child: Text(langTextProv.incomming, style: sectionStyle,)),
-                  ...orderd.where((t) => t.schedule.next()?.isToday() ?? false).map((t) => DailyTaskCard(task: t, status: widget.status))
-                ],
-              ),
-
-              Column(
-                children: [
-                  Align(alignment: .centerLeft, child: Text(langTextProv.done, style: sectionStyle,)),
-                  ...orderd.where((t) => !(t.schedule.next()?.isToday() ?? true)).map((t) => DailyTaskCard(task: t, status: widget.status))
-                ],
-              ),
-
-            ],
-          ),
-        },
-      ],
+          switch (layout) {
+            .chronologicalOrder => Column(
+              children: orderd
+                  .map((dt) => DailyTaskCard(task: dt, status: widget.status))
+                  .toList(),
+            ),
+            .doneLast => Column(
+              children: [
+                Column(
+                  children: [
+                    Align(alignment: .centerLeft, child: Text(langTextProv.occuring, style: sectionStyle,)),
+                    ...orderd.where((t) => t.schedule.occuringNow()).map((t) => DailyTaskCard(task: t, status: widget.status))
+                  ],
+                ),
+      
+                Column(
+                  children: [
+                    Align(alignment: .centerLeft, child: Text(langTextProv.incomming, style: sectionStyle,)),
+                    ...orderd.where((t) => t.schedule.next()?.isToday() ?? false).map((t) => DailyTaskCard(task: t, status: widget.status))
+                  ],
+                ),
+      
+                Column(
+                  children: [
+                    Align(alignment: .centerLeft, child: Text(langTextProv.done, style: sectionStyle,)),
+                    ...orderd.where((t) => !(t.schedule.next()?.isToday() ?? true)).map((t) => DailyTaskCard(task: t, status: widget.status))
+                  ],
+                ),
+      
+              ],
+            ),
+          },
+        ],
+      ),
     );
   }
 }
@@ -142,8 +144,7 @@ class DailyTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Placeholder();
   }
 }
 

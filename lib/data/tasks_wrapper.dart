@@ -13,7 +13,7 @@ class TasksWrapper with JsonSerializable {
   final List<Task> _tasks;
 
   TasksWrapper(List<Task> tasks) : _tasks = tasks;
-  TasksWrapper.empty() : this(List.empty());
+  TasksWrapper.empty() : this(List.empty(growable: true));
 
   static Result<TasksWrapper, FormatException> fromJson(
     Map<String, Object?> json,
@@ -41,8 +41,11 @@ class TasksWrapper with JsonSerializable {
   }
 
   int _nextId() {
-    for (int i = 0; i > 0; i++) {
-      if (!_tasks.any((tsk) => tsk.id == i)) return i;
+    
+    for (int i = 0; i >= 0; i++) {
+      if (_tasks.any((tsk) => tsk.id == i)) continue;
+      return i;
+
     }
     throw OutOfIdsError();
   }

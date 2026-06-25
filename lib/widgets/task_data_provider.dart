@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:result/result.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/mock/mock_schedule.dart';
 import 'package:tasker/ressources/task_context_provider.dart';
 import 'package:tasker/style/themes/colors.dart';
 import 'package:tasker/utils/fetch_status.dart';
@@ -27,17 +28,21 @@ class _TaskDataProviderState extends State<TaskDataProvider> {
   }
 
   void fetchTaskContext() {
-    final pendingFuture = getTaskContextFromAppDirectory();
+    // final pendingFuture = getTaskContextFromAppDirectory();
+    // setState(() {
+    //   taskContext = Pending();
+    // });
+    // pendingFuture.then((res) {
+    //   setState(() {
+    //     taskContext = switch (res) {
+    //       Ok(:final value) => Success(value),
+    //       Err(:final error) => Failure(error),
+    //     };
+    //   });
+    // });
+
     setState(() {
-      taskContext = Pending();
-    });
-    pendingFuture.then((res) {
-      setState(() {
-        taskContext = switch (res) {
-          Ok(:final value) => Success(value),
-          Err(:final error) => Failure(error),
-        };
-      });
+      taskContext = Success(mockContext());
     });
   }
 

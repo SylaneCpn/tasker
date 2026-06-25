@@ -1,13 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:tasker/data/date_range.dart';
-import 'package:tasker/data/month.dart';
-import 'package:tasker/data/task_instance.dart';
-import 'package:tasker/data/time_of_day_range.dart';
-import 'package:tasker/data/weekday.dart';
-import 'package:tasker/data/year_date.dart';
+import 'package:tasker/mock/mock_schedule.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 import 'package:test/test.dart';
 import 'package:tasker/data/schedule.dart';
@@ -21,14 +15,7 @@ void main() {
 
   group("Serialize Schedules", () {
     test("Serialize then Deserialize DistinctOccurences", () async {
-      final occurences = Iterable.generate(
-        15,
-        (i) => TaskInstance(
-          start: DateTime(2020 + 1, i % 12 + 1, (i * 5) % 28 + 1),
-          duration: Duration(hours: i + 1),
-        ),
-      ).toSet();
-      final disOcc = DiscreteOccurences(occurences: occurences);
+      final disOcc = mockDiscreteOccurences();
       final asJson = disOcc.toJson();
       final asJsonString = json.encode(asJson);
       final outputFile = await File(
@@ -42,22 +29,7 @@ void main() {
     });
 
     test("Serialize then Deserialize Weekly", () async {
-      final occurences = <Weekday, List<TimeOfDayRange>>{};
-      for (final i in Iterable<int>.generate(3)) {
-        final weekday = Weekday.fromDayOfWeek(i + 1);
-        final range = List.generate(
-          5,
-          (index) => TimeOfDayRange(
-            start: TimeOfDay(hour: index, minute: 0),
-            end: TimeOfDay(hour: index, minute: 59),
-          ),
-        );
-        occurences[weekday] = range;
-      }
-      final weekly = Weekly(
-        occurences: occurences,
-        range: DateRange(end: DateTime.now().copyWith(year: 2027)),
-      );
+      final weekly = mockWeekly();
       final asJson = weekly.toJson();
       final asJsonString = json.encode(asJson);
       final outputFile = await File(
@@ -72,22 +44,7 @@ void main() {
     });
 
     test("Serialize then Deserialize Monthly", () async {
-      final occurences = <int, List<TimeOfDayRange>>{};
-      for (final i in Iterable<int>.generate(15)) {
-        final monthday = i + 2;
-        final range = List.generate(
-          5,
-          (index) => TimeOfDayRange(
-            start: TimeOfDay(hour: index, minute: 0),
-            end: TimeOfDay(hour: index, minute: 59),
-          ),
-        );
-        occurences[monthday] = range;
-      }
-      final monthly = Monthly(
-        occurences: occurences,
-        range: DateRange(end: DateTime.now().copyWith(year: 2027)),
-      );
+      final monthly = mockMonthly();
       final asJson = monthly.toJson();
       final asJsonString = json.encode(asJson);
       final outputFile = await File(
@@ -100,22 +57,7 @@ void main() {
     });
 
     test("Serialize then Deserialize Yearly", () async {
-      final occurences = <YearDate, List<TimeOfDayRange>>{};
-      for (final i in Iterable<int>.generate(15)) {
-        final yearDate = YearDate(day: i + 1, month: Month.fromMonthOfYear(i + 1));
-        final range = List.generate(
-          5,
-          (index) => TimeOfDayRange(
-            start: TimeOfDay(hour: index, minute: 0),
-            end: TimeOfDay(hour: index, minute: 59),
-          ),
-        );
-        occurences[yearDate] = range;
-      }
-      final yearly = Yearly(
-        occurences: occurences,
-        range: DateRange(end: DateTime.now().copyWith(year: 2027)),
-      );
+      final yearly = mockYearly();
       final asJson = yearly.toJson();
       final asJsonString = json.encode(asJson);
       final outputFile = await File(
