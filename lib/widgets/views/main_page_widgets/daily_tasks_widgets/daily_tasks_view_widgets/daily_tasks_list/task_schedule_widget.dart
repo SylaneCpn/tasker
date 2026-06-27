@@ -30,20 +30,24 @@ class _TaskScheduleWidgetState extends State<TaskScheduleWidget> {
     return Expansible(
       controller: _controller,
       headerBuilder: (context, animation) => GestureDetector(
+        behavior: .opaque,
         onTap: () => _controller.isExpanded
             ? _controller.collapse()
             : _controller.expand(),
-        child: Row(
-          children: [
-            RotationTransition(
-              turns: animation,
-              child: Icon(Icons.expand_less),
-            ),
-            Text(
-              langTextProv.instances,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
+        child: Padding(
+          padding: sectionPadding,
+          child: Row(
+            children: [
+              RotationTransition(
+                turns: animation,
+                child: Icon(Icons.expand_less),
+              ),
+              Text(
+                langTextProv.instances,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ],
+          ),
         ),
       ),
       bodyBuilder: (context, animation) => Column(
