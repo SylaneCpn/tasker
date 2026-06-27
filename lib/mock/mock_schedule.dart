@@ -3,7 +3,6 @@ import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/date_range.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/data/schedule.dart';
-import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/tasks_wrapper.dart';

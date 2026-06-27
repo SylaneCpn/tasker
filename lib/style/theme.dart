@@ -23,3 +23,7 @@ final appThemeData = ThemeData(
   bottomNavigationBarTheme: theme.bottomNavBarTheme,
   floatingActionButtonTheme: theme.floatingActionButtonThemeData,
 );
+
+
+const sectionPadding = EdgeInsets.all(12.0);
+const isolatePadding = EdgeInsets.all(8.0);

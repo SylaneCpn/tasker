@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/data/app_config.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/commons/elevated_container.dart';
 
 class GreetingsCard extends StatelessWidget {
@@ -14,7 +15,7 @@ class GreetingsCard extends StatelessWidget {
     return ElevatedContainer(
       borderRadius: BorderRadius.circular(20.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: isolatePadding,
         child: Text(
           "${langTextProv.hello}\n${appState.name}",
           style: Theme.of(context).textTheme.headlineMedium,

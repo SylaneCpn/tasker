@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/data/app_config.dart';
+import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/app_nav_bar.dart';
 import 'package:tasker/widgets/views/main_page.dart';
 
@@ -29,7 +30,7 @@ class _PageSwitcherState extends State<PageSwitcher> {
         ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            padding: sectionPadding,
             child: [
               MainPage(),
               Text("Tasks"),
