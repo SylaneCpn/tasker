@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:result/result.dart';
 import 'package:tasker/data/task_context.dart';
-import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/mock/mock_schedule.dart';
 import 'package:tasker/ressources/task_context_provider.dart';
 import 'package:tasker/style/themes/colors.dart';
@@ -68,7 +68,7 @@ class DataNotFetchedYetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final langTextProv = context.watch<LangageTextProvider>();
+    final langTextProv = context.watch<LanguageTextProvider>();
     return Center(
       child: Text(
         langTextProv.dataNotFetchedYet,
@@ -83,7 +83,7 @@ class DataPendingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final langTextProv = context.watch<LangageTextProvider>();
+    final langTextProv = context.watch<LanguageTextProvider>();
     return Column(
       spacing: 20.0,
       mainAxisAlignment: .center,
@@ -111,7 +111,7 @@ class FetchFailureWidget<E> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final langTextProv = context.watch<LangageTextProvider>();
+    final langTextProv = context.watch<LanguageTextProvider>();
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(

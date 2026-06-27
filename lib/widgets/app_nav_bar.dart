@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 
 class AppNavBar extends StatelessWidget {
 
@@ -10,7 +10,7 @@ class AppNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = context.watch<LangageTextProvider>();
+    final languageProvider = context.watch<LanguageTextProvider>();
     return BottomNavigationBar(
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: languageProvider.homeLabel),

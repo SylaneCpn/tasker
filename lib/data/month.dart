@@ -1,4 +1,4 @@
-import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/utils/capitalize_string.dart';
 import 'package:tasker/utils/leap_year.dart';
 
@@ -47,7 +47,7 @@ enum Month {
     
   };
 
-  String asLangName(LangageTextProvider langTextProv) {
+  String asLangName(LanguageTextProvider langTextProv) {
     return langTextProv.rawTextes[name.toLowerCase()] ?? name.capitalize();
   }
 }

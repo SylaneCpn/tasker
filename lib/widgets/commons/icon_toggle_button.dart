@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/widgets/commons/elevated_container.dart';
 
-class ToggleButton extends StatelessWidget {
+class IconToggleButton extends StatelessWidget {
 
-  final Widget child; 
+  final IconData iconData; 
   final VoidCallback? toggleCallback;
   final bool activated;
   final BorderRadius? borderRadius;
   final Size size;
-  const ToggleButton({super.key, required this.child, required this.toggleCallback, required this.activated, this.borderRadius, required this.size});
+  const IconToggleButton({super.key, required this.toggleCallback, required this.activated, this.borderRadius, required this.size, required this.iconData,});
 
   static const activatedColor = Colors.blue;
   static const deactivatedColor = Colors.grey;
@@ -26,10 +26,7 @@ class ToggleButton extends StatelessWidget {
                   hoverColor: activatedColor,
                   // highlightColor: activatedColor,
                   borderRadius: borderRadius,
-                  child: Icon(
-                    Icons.sort,
-                    color: activated ? activatedColor : deactivatedColor,
-                  ),
+                  child: Icon(iconData, color: activated ? activatedColor : deactivatedColor,),
                 ),
       ),
     );

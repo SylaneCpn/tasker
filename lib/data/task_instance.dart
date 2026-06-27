@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_final_fields
 
 import 'package:result/result.dart';
+import 'package:tasker/data/month.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/utils/duration_parse.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
@@ -13,6 +15,7 @@ class TaskInstance {
   DateTime get start => _start;
   Duration get duration => _duration;
   DateTime get end => _start.add(duration);
+  bool get isAllDay => duration >= Duration(hours: 23, minutes: 59);
 
   TaskInstance({required DateTime start, required Duration duration})
     : _start = start,
@@ -42,6 +45,27 @@ class TaskInstance {
         FormatException("Could not parse TaskInstance from $str because $e"),
       );
     }
+  }
+
+  ({String timeRangeFormat, String dateFormat}) formatedDate(
+    LanguageTextProvider langTextProv,
+  ) {
+    final DateTime(:day, month: monthAsInt, :year) = _start;
+    final month = Month.fromMonthOfYear(monthAsInt);
+
+    final dateForrmat = "$day ${month.asLangName(langTextProv)} $year";
+
+    if (isAllDay) return (dateFormat: dateForrmat, timeRangeFormat: langTextProv.allDay);
+
+    final endProxy = end;
+    final beginHour = _start.hour;
+    final beginMinute = _start.minute;
+
+    final endHour = endProxy.hour;
+    final endMinute = endProxy.minute;
+
+    final timeRangeFormat = "$beginHour:$beginMinute - $endHour:$endMinute";
+    return (dateFormat: dateForrmat, timeRangeFormat: timeRangeFormat);
   }
 
   @override

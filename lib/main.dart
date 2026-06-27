@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tasker/languages/langage_text_provider.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart' as theme;
 import 'package:tasker/widgets/task_data_provider.dart';
 
@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
     return  MaterialApp(
       theme: theme.appThemeData ,
       home: ChangeNotifierProvider(
-        create: (context) => LangageTextProvider(),
+        create: (context) => LanguageTextProvider(),
         child: Scaffold(body: Center(child: const TaskDataProvider())),
       ),
     );

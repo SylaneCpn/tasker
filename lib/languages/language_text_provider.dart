@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tasker/data/month.dart';
 
-class LangageTextProvider with ChangeNotifier {
+class LanguageTextProvider with ChangeNotifier {
   static const defaultLocale = Locale("en");
   static const nameSpace = "lang";
   static const filePrefix = "textes";
@@ -16,16 +16,16 @@ class LangageTextProvider with ChangeNotifier {
 
   UnmodifiableMapView<String, String?> get rawTextes => .new(_textes ?? {});
 
-  LangageTextProvider._(this._locale);
+  LanguageTextProvider._(this._locale);
 
-  factory LangageTextProvider({Locale? locale}) {
+  factory LanguageTextProvider({Locale? locale}) {
     final loc =
         locale ??
         Locale(
           Platform.localeName.split("_").firstOrNull?.toLowerCase() ??
               defaultLocale.languageCode,
         );
-    final instance = LangageTextProvider._(loc);
+    final instance = LanguageTextProvider._(loc);
 
     _fetchLabelsFromDev(loc).then((map) {
       instance._textes = map;
@@ -78,6 +78,9 @@ class LangageTextProvider with ChangeNotifier {
   String get nextInstance => _txt("nextInstance") ?? "Next";
   String get prevInstance => _txt("prevInstance") ?? "Previously";
   String get neverInstance => _txt("neverInstance") ?? "No more instance.";
+  String get notificationActivated => _txt("notificationActivated") ?? "You will be notified of :";
+  String get notificationDeactivated => _txt("notificationDeactivated") ?? "You will no longer be notified of :";
+  String get allDay => _txt("allDay") ?? "All Day";
   String formatedDate(DateTime date) {
     final DateTime(:year, month: monthAsInt , :day , :hour , :minute ) = date;
     final month = Month.fromMonthOfYear(monthAsInt);
