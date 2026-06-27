@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:result/result.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/mock/mock_schedule.dart';
-import 'package:tasker/ressources/task_context_provider.dart';
 import 'package:tasker/style/themes/colors.dart';
 import 'package:tasker/utils/fetch_status.dart';
-import 'package:tasker/widgets/page_switcher.dart';
+import 'package:tasker/widgets/lifecycle_handler.dart';
 
 class TaskDataProvider extends StatefulWidget {
   const TaskDataProvider({super.key});
@@ -57,7 +55,7 @@ class _TaskDataProviderState extends State<TaskDataProvider> {
       ),
       Success(:final value) => ChangeNotifierProvider.value(
         value: value,
-        child: PageSwitcher(),
+        child: LifecycleHandler(taskContext:value),
       ),
     };
   }

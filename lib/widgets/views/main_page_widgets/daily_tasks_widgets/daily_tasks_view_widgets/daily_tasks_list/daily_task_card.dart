@@ -6,8 +6,10 @@ import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/commons/elevated_container.dart';
-import 'package:tasker/widgets/commons/icon_toggle_button.dart';
+import 'package:tasker/widgets/common/elevated_container.dart';
+import 'package:tasker/widgets/common/icon_toggle_button.dart';
+import 'package:tasker/widgets/common/light_separator.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list/task_schedule_widget.dart';
 
 class DailyTaskCard extends StatelessWidget {
   final Task task;
@@ -22,6 +24,7 @@ class DailyTaskCard extends StatelessWidget {
       : Colors.white;
 
   bool get actiavated => task.notifies;
+
 
   void toggleTaskNotification(
     TaskContext taskContext,
@@ -60,24 +63,34 @@ class DailyTaskCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: .start,
           ),
+          
           Text(
             task.description,
             style: Theme.of(context).textTheme.titleMedium,
             textAlign: .start,
           ),
 
+          const LightSeparator(),
+
           _InstanceTypeLabel(
             instanceType: InstanceType.fromSchedule(task.schedule),
           ),
-          Align(
-            alignment: .centerRight,
-            child: IconToggleButton(
-              toggleCallback: () => toggleTaskNotification(taskContext, context, langTextProv, task),
-              activated: actiavated,
-              borderRadius: defBorderRadius,
-              size: Size.square(42.0),
-              iconData: actiavated ? Icons.alarm_on : Icons.alarm_off,
-            ),
+
+          const LightSeparator(),
+
+          TaskScheduleWidget(status: status, task: task,),
+           Row(
+            spacing: smallSpacing,
+            mainAxisAlignment: .end,
+            children: [
+              IconToggleButton(
+                toggleCallback: () => toggleTaskNotification(taskContext, context, langTextProv, task),
+                activated: actiavated,
+                borderRadius: defBorderRadius,
+                size: Size.square(42.0),
+                iconData: actiavated ? Icons.alarm_on : Icons.alarm_off,
+              ),
+            ],
           ),
         ],
       ),
@@ -93,7 +106,7 @@ class _InstanceTypeLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final langTextProv = context.watch<LanguageTextProvider>();
-    final txtStyle = Theme.of(context).textTheme.bodyMedium;
+    final txtStyle = Theme.of(context).textTheme.titleSmall;
     switch (instanceType) {
       case NowInstance(:final instance):
         final (:timeRangeFormat, :dateFormat) = instance.formatedDate(

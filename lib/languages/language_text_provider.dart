@@ -81,6 +81,7 @@ class LanguageTextProvider with ChangeNotifier {
   String get notificationActivated => _txt("notificationActivated") ?? "You will be notified of :";
   String get notificationDeactivated => _txt("notificationDeactivated") ?? "You will no longer be notified of :";
   String get allDay => _txt("allDay") ?? "All Day";
+  String get instances => _txt("instances") ?? "Instances";
   String formatedDate(DateTime date) {
     final DateTime(:year, month: monthAsInt , :day , :hour , :minute ) = date;
     final month = Month.fromMonthOfYear(monthAsInt);

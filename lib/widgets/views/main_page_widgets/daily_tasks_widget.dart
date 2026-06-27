@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/commons/icon_toggle_button.dart';
+import 'package:tasker/widgets/common/icon_toggle_button.dart';
 import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_list_layout_mode.dart';
 import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view.dart';
 
@@ -37,7 +37,7 @@ class _DailyTasksWidgetState extends State<DailyTasksWidget> {
               padding: isolatePadding,
               child: Text(
                 langTextProv.taskLabel,
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
             ),
 
