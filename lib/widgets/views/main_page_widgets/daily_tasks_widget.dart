@@ -3,9 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/commons/elevated_container.dart';
 import 'package:tasker/widgets/commons/toggle_button.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_task_list_layout_mode.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_list_layout_mode.dart';
 import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view.dart';
 
 class DailyTasksWidget extends StatefulWidget {
@@ -16,7 +15,7 @@ class DailyTasksWidget extends StatefulWidget {
 }
 
 class _DailyTasksWidgetState extends State<DailyTasksWidget> {
-  DailyTaskListLayoutMode layout = .chronologicalOrder;
+  DailyTasksListLayoutMode layout = .chronologicalOrder;
 
   void toggleLayoutMode() => setState(
     () => layout = switch (layout) {
@@ -44,18 +43,12 @@ class _DailyTasksWidgetState extends State<DailyTasksWidget> {
 
             Padding(
               padding: isolatePadding,
-              child: ElevatedContainer(
-                borderRadius: BorderRadius.circular(12.0),
-                child: SizedBox(
-                  width: 42.0,
-                  height: 42.0,
-                  child: ToggleButton(
-                    toggleCallback: toggleLayoutMode,
-                    activated: layout == .doneLast,
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: Icon(Icons.sort),
-                  ),
-                ),
+              child: ToggleButton(
+                size: Size.square(42.0),
+                toggleCallback: toggleLayoutMode,
+                activated: layout == .doneLast,
+                borderRadius: defBorderRadius,
+                child: Icon(Icons.sort),
               ),
             ),
           ],

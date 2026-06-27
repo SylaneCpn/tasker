@@ -27,3 +27,7 @@ final appThemeData = ThemeData(
 
 const sectionPadding = EdgeInsets.all(12.0);
 const isolatePadding = EdgeInsets.all(8.0);
+
+final defBorderRadius = BorderRadius.circular(12.0);
+const smallSpacing = 8.0;
+const mediumSpacing = 12.0;

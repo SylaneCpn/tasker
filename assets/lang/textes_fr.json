@@ -11,5 +11,21 @@
     "emptyDailyTask" : "Pas de tâches pour aujourd'hui !",
     "done" : "Terminé",
     "occuring" : "En cours",
-    "incomming" : "A venir"
+    "incomming" : "A venir",
+    "nowInstance" : "En ce moment :",
+    "nextInstance" : "Prochainement :",
+    "prevInstance" : "Dernièrement :",
+    "neverInstance" : "Plus d'instance.",
+    "january" : "Janvier",
+    "february" : "Février",
+    "march" : "Mars",
+    "april" : "Avril",
+    "may" : "Mai",
+    "june" : "Juin",
+    "july" : "Juillet",
+    "august" : "Août",
+    "september" : "Septembre",
+    "october" : "Octobre",
+    "november" : "Novembre",
+    "december" : "Décembre"
 }

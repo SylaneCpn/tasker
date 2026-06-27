@@ -13,7 +13,7 @@ class GreetingsCard extends StatelessWidget {
     final appState = context.watch<AppConfig>();
     final langTextProv = context.watch<LangageTextProvider>();
     return ElevatedContainer(
-      borderRadius: BorderRadius.circular(20.0),
+      borderRadius: defBorderRadius,
       child: Padding(
         padding: isolatePadding,
         child: Text(

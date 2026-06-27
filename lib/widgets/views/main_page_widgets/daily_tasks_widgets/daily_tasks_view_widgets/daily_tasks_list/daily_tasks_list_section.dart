@@ -4,7 +4,7 @@ import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/languages/langage_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view/daily_tasks_list/daily_task_card.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list/daily_task_card.dart';
 
 class DailyTasksListSection extends StatelessWidget {
   final DailyTasksStatus status;
@@ -17,6 +17,7 @@ class DailyTasksListSection extends StatelessWidget {
     final langTextProv = context.watch<LangageTextProvider>();
     final sectionStyle = Theme.of(context).textTheme.headlineSmall;
     return Column(
+              crossAxisAlignment: .stretch,
               children: [
                 Align(
                   alignment: .centerLeft,

@@ -13,10 +13,10 @@ import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 @deserializable
 sealed class Schedule with JsonSerializable {
   /// Next time the schedule meets
-  DateTime? next();
+  TaskInstance? next();
 
   /// Last time the schedule was met
-  DateTime? last();
+  TaskInstance? last();
   bool isToday();
   bool occuringNow();
 
@@ -48,15 +48,29 @@ sealed class Schedule with JsonSerializable {
     return sortedInstances.firstOrNull;
   }
 
+  TaskInstance? nowInstance() {
+    if (occuringNow()) {
+      final instances = instancesToday();
+      final now = DateTime.now();
+      return instances.where((i) => i.contains(now)).firstOrNull;
+    }
+
+    return null;
+  }
+
   TaskInstance? firstInstanceToday() {
-    final DateTime(:year , :month , :day) = DateTime.now();
-    return firstInstanceOfTheDay(year: year, month: Month.fromMonthOfYear(month), day: day);
+    final DateTime(:year, :month, :day) = DateTime.now();
+    return firstInstanceOfTheDay(
+      year: year,
+      month: Month.fromMonthOfYear(month),
+      day: day,
+    );
   }
 
   Duration? sinceLast() {
     final lastTime = last();
     if (lastTime != null) {
-      return DateTime.now().difference(lastTime);
+      return DateTime.now().difference(lastTime.end);
     }
     return null;
   }
@@ -64,7 +78,7 @@ sealed class Schedule with JsonSerializable {
   Duration? tillNext() {
     final nextTime = next();
     if (nextTime != null) {
-      return nextTime.difference(DateTime.now());
+      return nextTime.start.difference(DateTime.now());
     }
 
     return null;
@@ -145,11 +159,11 @@ class DiscreteOccurences extends Schedule {
        );
 
   @override
-  DateTime? next() {
+  TaskInstance? next() {
     final now = DateTime.now();
     final afterNow = occurences.where((e) => e.start.isAfter(now)).toList()
       ..sort((a, b) => a.start.compareTo(b.start));
-    return afterNow.firstOrNull?.start;
+    return afterNow.firstOrNull;
   }
 
   @override
@@ -159,11 +173,11 @@ class DiscreteOccurences extends Schedule {
   }
 
   @override
-  DateTime? last() {
+  TaskInstance? last() {
     final now = DateTime.now();
     final beforeNow = occurences.where((e) => e.end.isBefore(now)).toList()
       ..sort((a, b) => b.start.compareTo(a.start));
-    return beforeNow.firstOrNull?.start;
+    return beforeNow.firstOrNull;
   }
 
   @override
@@ -251,7 +265,7 @@ class Weekly extends Schedule {
   }
 
   @override
-  DateTime? next() {
+  TaskInstance? next() {
     final now = DateTime.now();
     DateTime candidateDay = now.copyWith();
     MapEntry<Weekday, List<TimeOfDayRange>>? targetOccurence = occurences
@@ -284,7 +298,10 @@ class Weekly extends Schedule {
         hour: nextTimeOfDay.start.hour,
         minute: nextTimeOfDay.start.minute,
       );
-      return range.contains(targetDate) ? targetDate : null;
+
+      final targetInstance = TaskInstance(start: targetDate, duration: nextTimeOfDay.duration);
+
+      return range.contains(targetDate) ? targetInstance : null;
     }
     // Case the targetOcurence is today but was earlier that day
     // we have to find the next one
@@ -315,7 +332,9 @@ class Weekly extends Schedule {
         hour: firstTimeInDay.start.hour,
         minute: firstTimeInDay.start.minute,
       );
-      return range.contains(targetDate) ? targetDate : null;
+
+      final targetInstance = TaskInstance(start: targetDate, duration: firstTimeInDay.duration);
+      return range.contains(targetDate) ? targetInstance : null;
     }
   }
 
@@ -327,7 +346,7 @@ class Weekly extends Schedule {
   }
 
   @override
-  DateTime? last() {
+  TaskInstance? last() {
     final now = DateTime.now();
     DateTime candidateDay = now.copyWith();
     MapEntry<Weekday, List<TimeOfDayRange>>? targetOccurence = occurences
@@ -360,7 +379,8 @@ class Weekly extends Schedule {
         hour: lastTimeOfDay.start.hour,
         minute: lastTimeOfDay.start.minute,
       );
-      return range.contains(targetDate) ? targetDate : null;
+      final targetInstance = TaskInstance(start: targetDate, duration: lastTimeOfDay.duration);
+      return range.contains(targetDate) ? targetInstance : null;
     }
     // Case the targetOcurence is today but was later that day
     // we have to find the next one
@@ -391,7 +411,9 @@ class Weekly extends Schedule {
         hour: lastTimeInDay.start.hour,
         minute: lastTimeInDay.start.minute,
       );
-      return range.contains(targetDate) ? targetDate : null;
+
+      final targetInstance = TaskInstance(start: targetDate, duration: lastTimeInDay.duration);
+      return range.contains(targetDate) ? targetInstance : null;
     }
   }
 
@@ -506,7 +528,7 @@ class Monthly extends Schedule {
   }
 
   @override
-  DateTime? last() {
+  TaskInstance? last() {
     final now = DateTime.now();
     DateTime candidateDay = DateTime(now.year, now.month, now.day);
     MapEntry<int, List<TimeOfDayRange>>? targetOccurence = occurences.entries
@@ -538,11 +560,13 @@ class Monthly extends Schedule {
       hour: firstRange.start.hour,
       minute: firstRange.start.minute,
     );
-    return range.contains(targetTime) ? targetTime : null;
+
+    final targetInstance = TaskInstance(start: targetTime , duration:  firstRange.duration);
+    return range.contains(targetTime) ? targetInstance : null;
   }
 
   @override
-  DateTime? next() {
+  TaskInstance? next() {
     final now = DateTime.now();
     DateTime candidateDay = DateTime(now.year, now.month, now.day);
     MapEntry<int, List<TimeOfDayRange>>? targetOccurence = occurences.entries
@@ -574,7 +598,9 @@ class Monthly extends Schedule {
       hour: firstRange.start.hour,
       minute: firstRange.start.minute,
     );
-    return range.contains(targetTime) ? targetTime : null;
+
+    final targetInstance = TaskInstance(start: targetTime, duration: firstRange.duration);
+    return range.contains(targetTime) ? targetInstance : null;
   }
 
   @override
@@ -683,7 +709,7 @@ class Yearly extends Schedule {
   }
 
   @override
-  DateTime? last() {
+  TaskInstance? last() {
     final now = DateTime.now();
     final nowYearDate = YearDate(
       day: now.day,
@@ -713,11 +739,11 @@ class Yearly extends Schedule {
       prevRange.start.hour,
       prevRange.start.minute,
     );
-    return prevDateTime;
+    return TaskInstance(start: prevDateTime, duration: prevRange.duration);
   }
 
   @override
-  DateTime? next() {
+  TaskInstance? next() {
     final now = DateTime.now();
     final nowYearDate = YearDate(
       day: now.day,
@@ -747,7 +773,7 @@ class Yearly extends Schedule {
       nextRange.start.hour,
       nextRange.start.minute,
     );
-    return nextDateTime;
+    return TaskInstance(start: nextDateTime, duration: nextRange.duration);
   }
 
   @override

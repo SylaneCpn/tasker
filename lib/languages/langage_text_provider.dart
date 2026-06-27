@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tasker/data/month.dart';
 
 class LangageTextProvider with ChangeNotifier {
   static const defaultLocale = Locale("en");
@@ -73,4 +74,13 @@ class LangageTextProvider with ChangeNotifier {
   String get done => _txt("done") ?? "Done";
   String get occuring => _txt("occuring") ?? "Occuring";
   String get incomming => _txt("incomming") ?? "Incomming";
+  String get nowInstance => _txt("nowInstance") ?? "Right now :";
+  String get nextInstance => _txt("nextInstance") ?? "Next";
+  String get prevInstance => _txt("prevInstance") ?? "Previously";
+  String get neverInstance => _txt("neverInstance") ?? "No more instance.";
+  String formatedDate(DateTime date) {
+    final DateTime(:year, month: monthAsInt , :day , :hour , :minute ) = date;
+    final month = Month.fromMonthOfYear(monthAsInt);
+    return "$day ${month.asLangName(this)} $year @ $hour:$minute";
+  }
 }
