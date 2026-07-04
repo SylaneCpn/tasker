@@ -102,7 +102,7 @@ class _InstanceLabel extends StatelessWidget {
     return Padding(
       padding: isolatePadding,
       child: Row(
-        mainAxisAlignment: .spaceAround,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(timeRangeFormat, style: Theme.of(context).textTheme.titleSmall),
           Padding(
