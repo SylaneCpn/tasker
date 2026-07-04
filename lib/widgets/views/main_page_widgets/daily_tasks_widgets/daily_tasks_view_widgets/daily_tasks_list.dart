@@ -27,6 +27,7 @@ class DailyTasksList extends StatelessWidget {
       .chronologicalOrder => Padding(
         padding: sectionPadding,
         child: Column(
+          spacing: cardSpacing,
           crossAxisAlignment: .stretch,
           children: dailyTasks
               .map((dt) => DailyTaskCard(task: dt, status: status))

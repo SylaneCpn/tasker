@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
+import 'package:tasker/data/date.dart';
 import 'package:tasker/data/date_range.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/data/schedule.dart';
@@ -44,7 +45,7 @@ Weekly mockWeekly() {
   }
   final weekly = Weekly(
     occurences: occurences,
-    range: DateRange(end: DateTime.now().copyWith(year: 2027)),
+    range: DateRange(start: Date.fromDateTime( DateTime.now().subtract(Duration(days: 1))), end: Date.fromDateTime(DateTime.now().copyWith(year: 2027))),
   );
 
   return weekly;
@@ -65,7 +66,7 @@ Monthly mockMonthly() {
   }
   final monthly = Monthly(
     occurences: occurences,
-    range: DateRange(end: DateTime.now().copyWith(year: 2027)),
+    range: DateRange(start: Date.fromDateTime( DateTime.now().subtract(Duration(days: 1))), end: Date.fromDateTime(DateTime.now().copyWith(year: 2027))),
   );
   return monthly;
 }
@@ -85,7 +86,7 @@ Yearly mockYearly() {
   }
   final yearly = Yearly(
     occurences: occurences,
-    range: DateRange(end: DateTime.now().copyWith(year: 2027)),
+    range: DateRange(start: Date.fromDateTime( DateTime.now().subtract(Duration(days: 1))), end: Date.fromDateTime(DateTime.now().copyWith(year: 2027))),
   );
 
   return yearly;

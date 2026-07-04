@@ -183,10 +183,7 @@ class DiscreteOccurences extends Schedule {
   @override
   bool occuringNow() {
     final now = DateTime.now();
-    return occurences.any((e) {
-      final range = DateRange(start: e.start, end: e.end);
-      return range.contains(now);
-    });
+    return occurences.any((e) => !now.isBefore(e.start) && !now.isAfter(e.end));
   }
 
   @override
@@ -299,7 +296,10 @@ class Weekly extends Schedule {
         minute: nextTimeOfDay.start.minute,
       );
 
-      final targetInstance = TaskInstance(start: targetDate, duration: nextTimeOfDay.duration);
+      final targetInstance = TaskInstance(
+        start: targetDate,
+        duration: nextTimeOfDay.duration,
+      );
 
       return range.contains(targetDate) ? targetInstance : null;
     }
@@ -333,7 +333,10 @@ class Weekly extends Schedule {
         minute: firstTimeInDay.start.minute,
       );
 
-      final targetInstance = TaskInstance(start: targetDate, duration: firstTimeInDay.duration);
+      final targetInstance = TaskInstance(
+        start: targetDate,
+        duration: firstTimeInDay.duration,
+      );
       return range.contains(targetDate) ? targetInstance : null;
     }
   }
@@ -379,7 +382,10 @@ class Weekly extends Schedule {
         hour: lastTimeOfDay.start.hour,
         minute: lastTimeOfDay.start.minute,
       );
-      final targetInstance = TaskInstance(start: targetDate, duration: lastTimeOfDay.duration);
+      final targetInstance = TaskInstance(
+        start: targetDate,
+        duration: lastTimeOfDay.duration,
+      );
       return range.contains(targetDate) ? targetInstance : null;
     }
     // Case the targetOcurence is today but was later that day
@@ -412,7 +418,10 @@ class Weekly extends Schedule {
         minute: lastTimeInDay.start.minute,
       );
 
-      final targetInstance = TaskInstance(start: targetDate, duration: lastTimeInDay.duration);
+      final targetInstance = TaskInstance(
+        start: targetDate,
+        duration: lastTimeInDay.duration,
+      );
       return range.contains(targetDate) ? targetInstance : null;
     }
   }
@@ -535,33 +544,30 @@ class Monthly extends Schedule {
         .where(
           (e) =>
               e.key == candidateDay.day &&
-                  // If today then only get the occurences that have passed
-                  candidateDay.isToday()
-              ? e.value.any((r) => r.isBefore(now.asTimeOfDay()))
-              : true,
+                  // For today then only get the occurences that have passed
+                  e.value.any((r) => r.isBefore(now.asTimeOfDay())),
         )
         .firstOrNull;
     while (targetOccurence == null) {
       candidateDay = candidateDay.subtract(Duration(days: 1));
       targetOccurence = occurences.entries
           .where(
-            (e) => e.key == candidateDay.day && candidateDay.isToday()
-                ? e.value.any((r) => r.isBefore(now.asTimeOfDay()))
-                : true,
+            (e) => e.key == candidateDay.day && candidateDay.isToday(),
           )
           .firstOrNull;
     }
     final sortedRanges = targetOccurence.value
       ..sort((a, b) => b.start.compareTo(a.start));
-    final firstRange = sortedRanges.firstWhere(
-      (sr) => candidateDay.isToday() ? sr.isBefore(now.asTimeOfDay()) : true,
-    );
+    final firstRange = sortedRanges.first;
     final targetTime = candidateDay.copyWith(
       hour: firstRange.start.hour,
       minute: firstRange.start.minute,
     );
 
-    final targetInstance = TaskInstance(start: targetTime , duration:  firstRange.duration);
+    final targetInstance = TaskInstance(
+      start: targetTime,
+      duration: firstRange.duration,
+    );
     return range.contains(targetTime) ? targetInstance : null;
   }
 
@@ -573,33 +579,32 @@ class Monthly extends Schedule {
         .where(
           (e) =>
               e.key == candidateDay.day &&
-                  // If today then only get the occurences that haven't passed yet
-                  candidateDay.isToday()
-              ? e.value.any((r) => r.isAfter(now.asTimeOfDay()))
-              : true,
+              //For today today then only get the occurences that haven't passed yet
+              e.value.any((r) => r.isAfter(now.asTimeOfDay())),
         )
         .firstOrNull;
     while (targetOccurence == null) {
       candidateDay = candidateDay.add(Duration(days: 1));
       targetOccurence = occurences.entries
           .where(
-            (e) => e.key == candidateDay.day && candidateDay.isToday()
-                ? e.value.any((r) => r.isAfter(now.asTimeOfDay()))
-                : true,
+            (e) => e.key == candidateDay.day,
           )
           .firstOrNull;
     }
     final sortedRanges = targetOccurence.value
       ..sort((a, b) => a.start.compareTo(b.start));
-    final firstRange = sortedRanges.firstWhere(
-      (sr) => candidateDay.isToday() ? sr.isAfter(now.asTimeOfDay()) : true,
-    );
+
+    final firstRange = sortedRanges.first;
+
     final targetTime = candidateDay.copyWith(
       hour: firstRange.start.hour,
       minute: firstRange.start.minute,
     );
 
-    final targetInstance = TaskInstance(start: targetTime, duration: firstRange.duration);
+    final targetInstance = TaskInstance(
+      start: targetTime,
+      duration: firstRange.duration,
+    );
     return range.contains(targetTime) ? targetInstance : null;
   }
 
@@ -621,7 +626,8 @@ class Monthly extends Schedule {
     required int day,
   }) {
     final dateTime = DateTime(year, month.monthOfYear(), day);
-    return occurences.entries
+    return !range.contains(dateTime) ? Iterable.empty()
+    : occurences.entries
         .where((e) => e.key == dateTime.day && range.contains(dateTime))
         .expand(
           (e) => e.value.map(

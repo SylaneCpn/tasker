@@ -18,11 +18,13 @@ class DailyTasksView extends StatelessWidget {
     final dailyStatus = taskContext.dailyStatus;
     final taskWrapper = taskContext.tasksWrapper;
 
-    final sortedDailyTasks = taskWrapper.tasks.where((tsk) => tsk.schedule.isToday()).toList()..sort(
-        (a, b) => a.schedule.firstInstanceToday()!.start.compareTo(
-          b.schedule.firstInstanceToday()!.start,
-        ),
-      );
+    final sortedDailyTasks = taskWrapper.tasks
+        .where((tsk) => tsk.schedule.isToday())
+        .toList()..sort(
+      (a, b) => a.schedule.firstInstanceToday()!.start.compareTo(
+        b.schedule.firstInstanceToday()!.start,
+      ),
+    );
 
     if (sortedDailyTasks.isNotEmpty) {
       return DailyTasksList(
