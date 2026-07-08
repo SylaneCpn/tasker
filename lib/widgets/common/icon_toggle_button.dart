@@ -22,8 +22,8 @@ class IconToggleButton extends StatelessWidget {
         height: size.height,
         child: InkWell(
                   onTap: toggleCallback,
-                  focusColor: activatedColor ,
-                  hoverColor: activatedColor,
+                  // focusColor: activatedColor ,
+                  // hoverColor: activatedColor,
                   // highlightColor: activatedColor,
                   borderRadius: borderRadius,
                   child: Icon(iconData, color: activated ? activatedColor : deactivatedColor,),

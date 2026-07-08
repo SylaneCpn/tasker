@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
@@ -38,8 +40,8 @@ class _TaskScheduleWidgetState extends State<TaskScheduleWidget> {
           padding: sectionPadding,
           child: Row(
             children: [
-              RotationTransition(
-                turns: animation,
+              Transform.rotate(
+                angle: animation.value * pi,
                 child: Icon(Icons.expand_less),
               ),
               Text(

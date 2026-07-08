@@ -32,3 +32,4 @@ final defBorderRadius = BorderRadius.circular(12.0);
 const smallSpacing = 8.0;
 const mediumSpacing = 12.0;
 const cardSpacing = 32.0;
+const defaultSpacing = 24.0;

@@ -16,6 +16,7 @@ class DailyTasksListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final sectionStyle = Theme.of(context).textTheme.headlineSmall;
     return Column(
+          spacing: mediumSpacing ,
               crossAxisAlignment: .stretch,
               children: [
                 Align(
