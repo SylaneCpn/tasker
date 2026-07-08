@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/utils/date_time_extensions.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list/daily_tasks_list_section.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list/daily_tasks_list_section.dart';
 
 class DoneLastTasksList  extends StatelessWidget{
   final DailyTasksStatus status;
@@ -12,6 +14,7 @@ class DoneLastTasksList  extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    final LanguageTextProvider langTextProv = context.watch();
     final occuringNowTasks = dailyTasks.where((t) => t.schedule.occuringNow());
 
     final incommingTasks = dailyTasks.where(
@@ -26,19 +29,19 @@ class DoneLastTasksList  extends StatelessWidget{
         if (occuringNowTasks.isNotEmpty)
           Padding(
             padding: sectionPadding,
-            child: DailyTasksListSection(taskList: occuringNowTasks, status: status),
+            child: DailyTasksListSection(label: langTextProv.occuring, taskList: occuringNowTasks, status: status),
           ),
 
         if (incommingTasks.isNotEmpty)
           Padding(
             padding: sectionPadding,
-            child: DailyTasksListSection(taskList: incommingTasks, status: status),
+            child: DailyTasksListSection(label : langTextProv.incomming , taskList: incommingTasks, status: status),
           ),
 
         if (otherTasks.isNotEmpty)
           Padding(
             padding: sectionPadding,
-            child: DailyTasksListSection(taskList: otherTasks, status: status),
+            child: DailyTasksListSection( label :langTextProv.done ,taskList: otherTasks, status: status),
           ),
       ],
     );

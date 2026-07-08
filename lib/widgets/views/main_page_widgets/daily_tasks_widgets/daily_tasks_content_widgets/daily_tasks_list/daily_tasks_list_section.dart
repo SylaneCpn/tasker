@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
-import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list/daily_task_card.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list/daily_task_card.dart';
 
 class DailyTasksListSection extends StatelessWidget {
   final DailyTasksStatus status;
   final Iterable<Task> taskList;
+  final String label;
 
-  const DailyTasksListSection({super.key, required this.taskList, required this.status});
+  const DailyTasksListSection({super.key, required this.taskList, required this.status, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    final langTextProv = context.watch<LanguageTextProvider>();
     final sectionStyle = Theme.of(context).textTheme.headlineSmall;
     return Column(
               crossAxisAlignment: .stretch,
@@ -23,7 +22,7 @@ class DailyTasksListSection extends StatelessWidget {
                   alignment: .centerLeft,
                   child: Padding(
                     padding: isolatePadding,
-                    child: Text(langTextProv.occuring, style: sectionStyle),
+                    child: Text(label, style: sectionStyle),
                   ),
                 ),
                 ...taskList.map(

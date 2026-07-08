@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_list_layout_mode.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/empty_daily_tasks_widget.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/empty_daily_tasks_widget.dart';
 
-class DailyTasksView extends StatelessWidget {
+class DailyTasksContent extends StatelessWidget {
   final DailyTasksListLayoutMode layout;
   final TaskContext taskContext;
-  const DailyTasksView({
+  const DailyTasksContent({
     super.key,
     required this.taskContext,
     required this.layout,

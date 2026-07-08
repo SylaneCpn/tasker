@@ -9,13 +9,14 @@ import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/elevated_container.dart';
 import 'package:tasker/widgets/common/icon_toggle_button.dart';
 import 'package:tasker/widgets/common/light_separator.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_view_widgets/daily_tasks_list/task_schedule_widget.dart';
+import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list/task_schedule_widget.dart';
 
 class DailyTaskCard extends StatelessWidget {
   final Task task;
   final DailyTasksStatus status;
   const DailyTaskCard({super.key, required this.task, required this.status});
-
+  // TODO : Replace a by a function that provide other colors depending on
+  // the status. For exemple Blue if occuring now. Green if all instances done and red if missed
   Color borderColor() => task.schedule.occuringNow()
       ? Color.fromRGBO(0, 255, 0, 1.0)
       : Colors.black;

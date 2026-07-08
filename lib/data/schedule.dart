@@ -20,6 +20,8 @@ sealed class Schedule with JsonSerializable {
   bool isToday();
   bool occuringNow();
 
+
+
   Iterable<TaskInstance> instancesForDay({
     required int year,
     required Month month,

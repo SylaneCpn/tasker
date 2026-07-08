@@ -50,18 +50,21 @@ class _TaskScheduleWidgetState extends State<TaskScheduleWidget> {
           ),
         ),
       ),
-      bodyBuilder: (context, animation) => Column(
-        children: widget.task.schedule
-            .instancesToday()
-            .map(
-              (instance) => _InstanceLabel(
-                instance: instance,
-                status: widget.status,
-                taskId: widget.task.id,
-              ),
-            )
-            .toList(),
-      ),
+      bodyBuilder: (context, animation) {
+        final sortedTodayInstances = widget.task.schedule.instancesToday().toList()..sort((a,b) => a.start.compareTo(b.start));
+
+        return Column(
+          children: sortedTodayInstances
+              .map(
+                (instance) => _InstanceLabel(
+                  instance: instance,
+                  status: widget.status,
+                  taskId: widget.task.id,
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 }
@@ -80,9 +83,7 @@ class _InstanceLabel extends StatelessWidget {
   void toggleDone(TaskContext context) {
     if (status.done[taskId]?.contains(instance) ?? false) {
       status.done[taskId]!.remove(instance);
-    }
-
-    else {
+    } else {
       //Create for id if doesn't exists
       status.done[taskId] ??= [];
       status.done[taskId]!.add(instance);

@@ -13,10 +13,10 @@ sealed class InstanceType {
     }
 
     final next = schedule.next();
-    if (next != null) return NextInstance(next);
+    if (next?.isToday() ?? false) return NextInstance(next!);
 
     final prev = schedule.last();
-    if (prev != null) return PrevInstance(prev);
+    if (prev?.isToday() ?? false) return PrevInstance(prev!);
 
     // Should not append but just in case
     return NeverInstance();

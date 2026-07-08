@@ -3,6 +3,7 @@
 import 'package:result/result.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/languages/language_text_provider.dart';
+import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/utils/duration_parse.dart';
 import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
@@ -81,4 +82,7 @@ class TaskInstance {
       !dateTime.isBefore(start) && !dateTime.isAfter(end);
 
   String serialize() => "$_start+$_duration";
+
+
+  bool isToday() => _start.isToday();
 }
