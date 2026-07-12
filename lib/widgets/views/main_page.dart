@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widget.dart';
-import 'package:tasker/widgets/views/main_page_widgets/greetings_card.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget.dart';
+import 'package:tasker/widgets/views/main_page/greetings_card.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

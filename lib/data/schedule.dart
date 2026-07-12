@@ -5,10 +5,10 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
 import 'package:tasker/data/year_date.dart';
+import 'package:tasker/extensions/date_time_extensions.dart';
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/meta/deserializable.dart';
-import 'package:tasker/utils/date_time_extensions.dart';
 import 'package:tasker/utils/json_serializable.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 @deserializable
 sealed class Schedule with JsonSerializable {

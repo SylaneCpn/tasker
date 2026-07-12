@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart' as path_prov;
 import 'package:result/result.dart';
 import 'package:tasker/data/tasks_wrapper.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 
 const appTaskWrapperPath = "data/persistance/tasks.json";
 

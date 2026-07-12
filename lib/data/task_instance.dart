@@ -1,11 +1,9 @@
 // ignore_for_file: prefer_final_fields
 
 import 'package:result/result.dart';
-import 'package:tasker/data/month.dart';
-import 'package:tasker/languages/language_text_provider.dart';
-import 'package:tasker/utils/date_time_extensions.dart';
+import 'package:tasker/extensions/date_time_extensions.dart';
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/utils/duration_parse.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 /// An instance of a task
 /// With an DateTime as start time and a Duration
@@ -48,26 +46,7 @@ class TaskInstance {
     }
   }
 
-  ({String timeRangeFormat, String dateFormat}) formatedDate(
-    LanguageTextProvider langTextProv,
-  ) {
-    final DateTime(:day, month: monthAsInt, :year) = _start;
-    final month = Month.fromMonthOfYear(monthAsInt);
-
-    final dateForrmat = "$day ${month.asLangName(langTextProv)} $year";
-
-    if (isAllDay) return (dateFormat: dateForrmat, timeRangeFormat: langTextProv.allDay);
-
-    final endProxy = end;
-    final beginHour = _start.hour;
-    final beginMinute = _start.minute;
-
-    final endHour = endProxy.hour;
-    final endMinute = endProxy.minute;
-
-    final timeRangeFormat = "$beginHour:$beginMinute - $endHour:$endMinute";
-    return (dateFormat: dateForrmat, timeRangeFormat: timeRangeFormat);
-  }
+  
 
   @override
   bool operator ==(Object other) =>

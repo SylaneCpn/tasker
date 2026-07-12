@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/data/task_context.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_list_layout_mode.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/empty_daily_tasks_widget.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_list_layout_mode.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/empty_daily_tasks_widget.dart';
 
 class DailyTasksContent extends StatelessWidget {
   final DailyTasksListLayoutMode layout;

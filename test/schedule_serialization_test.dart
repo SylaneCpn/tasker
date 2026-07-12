@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/mock/mock_schedule.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 import 'package:test/test.dart';
 import 'package:tasker/data/schedule.dart';
 

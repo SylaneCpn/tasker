@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tasker/data/month.dart';
+import 'package:tasker/extensions/language_formating_extensions.dart';
 
 class LanguageTextProvider with ChangeNotifier {
   static const defaultLocale = Locale("en");

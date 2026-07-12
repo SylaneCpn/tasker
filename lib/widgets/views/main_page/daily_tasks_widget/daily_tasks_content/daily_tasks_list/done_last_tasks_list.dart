@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
+import 'package:tasker/extensions/date_time_extensions.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/utils/date_time_extensions.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list/daily_tasks_list_section.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list/daily_tasks_list_section.dart';
 
 class DoneLastTasksList  extends StatelessWidget{
   final DailyTasksStatus status;

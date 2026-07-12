@@ -4,8 +4,9 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart' as path_prov;
 import 'package:result/result.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
-import 'package:tasker/utils/date_time_extensions.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
+import 'package:tasker/extensions/date_time_extensions.dart';
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
+
 
 
 const appDailyStatusPath = "data/persistance/daily_status.json";

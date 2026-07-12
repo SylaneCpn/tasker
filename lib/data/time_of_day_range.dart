@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:result/result.dart';
-import 'package:tasker/utils/date_time_extensions.dart';
-import 'package:tasker/utils/serialize_time_of_day.dart';
+import 'package:tasker/extensions/date_time_extensions.dart';
+import 'package:tasker/extensions/serialize_time_of_day.dart';
 
 class TimeOfDayRange {
   TimeOfDay _start;

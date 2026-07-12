@@ -6,6 +6,7 @@ import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/data/task_instance.dart';
+import 'package:tasker/extensions/language_formating_extensions.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/icon_toggle_button.dart';

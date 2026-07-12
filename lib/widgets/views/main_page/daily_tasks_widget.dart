@@ -4,8 +4,8 @@ import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/icon_toggle_button.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_list_layout_mode.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_list_layout_mode.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content.dart';
 
 class DailyTasksWidget extends StatefulWidget {
   const DailyTasksWidget({super.key});

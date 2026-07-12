@@ -4,12 +4,13 @@ import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/instance_type.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
+import 'package:tasker/extensions/language_formating_extensions.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/elevated_container.dart';
 import 'package:tasker/widgets/common/icon_toggle_button.dart';
 import 'package:tasker/widgets/common/light_separator.dart';
-import 'package:tasker/widgets/views/main_page_widgets/daily_tasks_widgets/daily_tasks_content_widgets/daily_tasks_list/task_schedule_widget.dart';
+import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list/task_schedule_widget.dart';
 
 class DailyTaskCard extends StatelessWidget {
   final Task task;

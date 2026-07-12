@@ -3,10 +3,10 @@ import 'dart:collection';
 import 'package:result/result.dart';
 import 'package:tasker/data/schedule.dart';
 import 'package:tasker/data/task.dart';
+import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/meta/out_of_ids_error.dart';
 import 'package:tasker/meta/deserializable.dart';
 import 'package:tasker/utils/json_serializable.dart';
-import 'package:tasker/utils/unwrap_or_throw_extension.dart';
 
 @deserializable
 class TasksWrapper with JsonSerializable {
@@ -41,11 +41,8 @@ class TasksWrapper with JsonSerializable {
   }
 
   int _nextId() {
-    
     for (int i = 0; i >= 0; i++) {
-      if (_tasks.any((tsk) => tsk.id == i)) continue;
-      return i;
-
+      if (_tasks.every((tsk) => tsk.id != i)) return i;
     }
     throw OutOfIdsError();
   }
