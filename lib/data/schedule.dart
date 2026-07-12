@@ -98,6 +98,8 @@ sealed class Schedule with JsonSerializable {
       ),
     };
   }
+
+  String get typeName;
 }
 
 @deserializable
@@ -196,6 +198,9 @@ class DiscreteOccurences extends Schedule {
   }) => occurences.where(
     (occ) => occ.start.isSameDay(DateTime(year, month.monthOfYear(), day)),
   );
+  
+  @override
+  String get typeName => 'discreteOccurences';
 }
 
 @deserializable
@@ -467,6 +472,9 @@ class Weekly extends Schedule {
           ),
         );
   }
+  
+  @override
+  String get typeName => 'weekly';
 }
 
 @deserializable
@@ -643,6 +651,9 @@ class Monthly extends Schedule {
           ),
         );
   }
+  
+  @override
+  String get typeName => 'monthly';
 }
 
 @deserializable
@@ -816,4 +827,7 @@ class Yearly extends Schedule {
           ),
         );
   }
+  
+  @override
+  String get typeName => 'yearly';
 }

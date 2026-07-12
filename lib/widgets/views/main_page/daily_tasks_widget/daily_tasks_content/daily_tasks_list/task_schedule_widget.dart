@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tasker/data/daily_tasks_status.dart';
@@ -9,7 +7,7 @@ import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/extensions/language_formating_extensions.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
-import 'package:tasker/widgets/common/icon_toggle_button.dart';
+import 'package:tasker/widgets/common/accordion.dart';
 
 class TaskScheduleWidget extends StatefulWidget {
   final DailyTasksStatus status;
@@ -25,36 +23,18 @@ class TaskScheduleWidget extends StatefulWidget {
 }
 
 class _TaskScheduleWidgetState extends State<TaskScheduleWidget> {
-  final ExpansibleController _controller = .new();
-
   @override
   Widget build(BuildContext context) {
     final langTextProv = context.watch<LanguageTextProvider>();
-    return Expansible(
-      controller: _controller,
-      headerBuilder: (context, animation) => GestureDetector(
-        behavior: .opaque,
-        onTap: () => _controller.isExpanded
-            ? _controller.collapse()
-            : _controller.expand(),
-        child: Padding(
-          padding: sectionPadding,
-          child: Row(
-            children: [
-              Transform.rotate(
-                angle: animation.value * pi,
-                child: Icon(Icons.expand_less),
-              ),
-              Text(
-                langTextProv.instances,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
+    return Accordion(
+        header: Text(
+          langTextProv.instancesToday,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-      ),
       bodyBuilder: (context, animation) {
-        final sortedTodayInstances = widget.task.schedule.instancesToday().toList()..sort((a,b) => a.start.compareTo(b.start));
+        final sortedTodayInstances =
+            widget.task.schedule.instancesToday().toList()
+              ..sort((a, b) => a.start.compareTo(b.start));
 
         return Column(
           children: sortedTodayInstances
@@ -103,23 +83,36 @@ class _InstanceLabel extends StatelessWidget {
     final (dateFormat: _, :timeRangeFormat) = instance.formatedDate(
       langTextProv,
     );
+    const padding = EdgeInsets.symmetric(horizontal: 35.0);
     return Padding(
-      padding: isolatePadding,
-      child: Row(
-        mainAxisAlignment: .spaceBetween,
-        children: [
-          Text(timeRangeFormat, style: Theme.of(context).textTheme.titleSmall),
-          Padding(
-            padding: isolatePadding,
-            child: IconToggleButton(
-              toggleCallback: () => toggleDone(taskContext),
-              borderRadius: defBorderRadius,
-              activated: status.done[taskId]?.contains(instance) ?? false,
-              size: Size.square(32.0),
-              iconData: Icons.check,
+      padding: padding,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: lightSeparatorColor.withAlpha((255 * 0.8).toInt()),
             ),
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            Text(
+              timeRangeFormat,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            Padding(
+              padding: isolatePadding,
+              child: IconButton(
+                onPressed: () => toggleDone(taskContext),
+                color: (status.done[taskId]?.contains(instance) ?? false)
+                    ? Colors.blue
+                    : null,
+                icon: Icon(Icons.check),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -18,11 +18,11 @@ class DoneLastTasksList  extends StatelessWidget{
     final occuringNowTasks = dailyTasks.where((t) => t.schedule.occuringNow());
 
     final incommingTasks = dailyTasks.where(
-      (t) => t.schedule.next()?.start.isToday() ?? false,
+      (t) => (t.schedule.next()?.start.isToday() ?? false) && !t.schedule.occuringNow(),
     );
 
     final otherTasks = dailyTasks.where(
-      (t) => !(t.schedule.next()?.start.isToday() ?? true),
+      (t) => !(t.schedule.next()?.start.isToday() ?? true) && !t.schedule.occuringNow(),
     );
     return Column(
       children: [

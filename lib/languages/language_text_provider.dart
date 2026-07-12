@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/extensions/language_formating_extensions.dart';
+import 'package:tasker/extensions/pad_for_clock.dart';
 
 class LanguageTextProvider with ChangeNotifier {
   static const defaultLocale = Locale("en");
@@ -83,9 +84,14 @@ class LanguageTextProvider with ChangeNotifier {
   String get notificationDeactivated => _txt("notificationDeactivated") ?? "You will no longer be notified of :";
   String get allDay => _txt("allDay") ?? "All Day";
   String get instances => _txt("instances") ?? "Instances";
+  String get instancesToday => _txt("instancesToday") ?? "Instances Today";
+  String get discreteOccurences => _txt("discreteOccurences") ?? "Discrete Occurences";
+  String get weekly => _txt("weekly") ?? "Weekly";
+  String get monthly => _txt("monthly") ?? "Monthly";
+  String get yearly => _txt("yearly") ?? "Yearly";
   String formatedDate(DateTime date) {
     final DateTime(:year, month: monthAsInt , :day , :hour , :minute ) = date;
     final month = Month.fromMonthOfYear(monthAsInt);
-    return "$day ${month.asLangName(this)} $year @ $hour:$minute";
+    return "$day ${month.asLangName(this)} $year @ ${hour.padForClock()}:${minute.padForClock()}";
   }
 }

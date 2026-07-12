@@ -72,6 +72,12 @@ class DailyTaskCard extends StatelessWidget {
             textAlign: .start,
           ),
 
+          Text(
+            langTextProv.rawTextes[task.schedule.typeName]!,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightText),
+            textAlign: .start,
+          ),
+
           const LightSeparator(),
 
           _InstanceTypeLabel(
