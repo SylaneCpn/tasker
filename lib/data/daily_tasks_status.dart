@@ -1,4 +1,5 @@
 import 'package:result/result.dart';
+import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/meta/deserializable.dart';
@@ -65,4 +66,11 @@ class DailyTasksStatus with JsonSerializable {
     asJson["done"] = doneStringMap;
     return asJson;
   }
+
+  bool allDoneForToday(Task task) {
+    final doneInstancesForTask = done[task.id];
+    return doneInstancesForTask?.length == task.schedule.instancesToday().length;
+  }
+
+  
 }

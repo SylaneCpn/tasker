@@ -27,7 +27,7 @@ class DailyTasksListSection extends StatelessWidget {
                   ),
                 ),
                 ...taskList.map(
-                  (t) => DailyTaskCard(task: t, status: status),
+                  (t) => DailyTaskCard(key: ValueKey(t.id), task: t, status: status),
                 ),
               ],
             );

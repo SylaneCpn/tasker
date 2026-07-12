@@ -12,10 +12,11 @@ import 'package:tasker/widgets/common/accordion.dart';
 class TaskScheduleWidget extends StatefulWidget {
   final DailyTasksStatus status;
   final Task task;
+
   const TaskScheduleWidget({
     super.key,
     required this.status,
-    required this.task,
+    required this.task
   });
 
   @override
@@ -56,6 +57,7 @@ class _InstanceLabel extends StatelessWidget {
   final TaskInstance instance;
   final DailyTasksStatus status;
   final int taskId;
+  
 
   const _InstanceLabel({
     required this.instance,
@@ -104,7 +106,9 @@ class _InstanceLabel extends StatelessWidget {
             Padding(
               padding: isolatePadding,
               child: IconButton(
-                onPressed: () => toggleDone(taskContext),
+                onPressed: () {
+                  toggleDone(taskContext);
+                },
                 color: (status.done[taskId]?.contains(instance) ?? false)
                     ? Colors.blue
                     : null,

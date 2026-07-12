@@ -1,15 +1,47 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget.dart';
 import 'package:tasker/widgets/views/main_page/greetings_card.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  
+  // Configured to rebuild the widget every minute
+  Timer? _rebuildTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    final DateTime(:second, :millisecond) = DateTime.now();
+    final millisUntilFullMinute = 60 * 1000 - (second * 1000 + millisecond);
+    Future<void>.delayed(Duration(milliseconds: millisUntilFullMinute)).then((
+      _,
+    ) {
+      _rebuildTimer = .periodic(Duration(minutes: 1), (_) => setState(() {}));
+    });
+  }
+
+  @override
+  void dispose() {
+    _rebuildTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {} , child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
       body: SingleChildScrollView(
         child: Column(
           spacing: defaultSpacing,
@@ -18,9 +50,7 @@ class MainPage extends StatelessWidget {
             Align(alignment: .topLeft, child: const GreetingsCard()),
             const DailyTasksWidget(),
             // Here so floating action button does't block some tasks
-            const SizedBox(
-              height: 50.0,
-            )
+            const SizedBox(height: 50.0),
           ],
         ),
       ),

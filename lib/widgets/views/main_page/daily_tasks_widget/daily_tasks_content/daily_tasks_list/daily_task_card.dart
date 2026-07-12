@@ -12,21 +12,97 @@ import 'package:tasker/widgets/common/icon_toggle_button.dart';
 import 'package:tasker/widgets/common/light_separator.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list/task_schedule_widget.dart';
 
-class DailyTaskCard extends StatelessWidget {
+class DailyTaskCard extends StatefulWidget {
   final Task task;
   final DailyTasksStatus status;
   const DailyTaskCard({super.key, required this.task, required this.status});
-  // TODO : Replace a by a function that provide other colors depending on
-  // the status. For exemple Blue if occuring now. Green if all instances done and red if missed
-  Color borderColor() => task.schedule.occuringNow()
-      ? Color.fromRGBO(0, 255, 0, 1.0)
-      : Colors.black;
-  Color cardBackGroundColor() => task.schedule.occuringNow()
-      ? Color.fromRGBO(0, 255, 0, 0.15)
-      : Colors.white;
 
-  bool get actiavated => task.notifies;
+  @override
+  State<DailyTaskCard> createState() => _DailyTaskCardState();
+}
 
+class _DailyTaskCardState extends State<DailyTaskCard> with SingleTickerProviderStateMixin {
+
+  late final AnimationController _controller = .new(vsync: this , duration:  Duration(milliseconds: 400)) ;
+
+  double _animationValue = 0.0;
+
+
+  // For box color animation
+  Color? lastColorBorder;
+  Color? lastColorBackgroud;
+  late Color currentColorBorder;
+  late Color currentColorBackground;
+  
+
+  @override
+  void initState() {
+    super.initState();
+    final (:borderColor, :cardBackGroundColor) = cardColors();
+
+    currentColorBackground = cardBackGroundColor;
+    currentColorBorder = borderColor;
+    _controller.addListener(() {
+      setState(() {
+        _animationValue = _controller.value;
+      });
+      
+    });
+    _controller.forward();
+    
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+
+  @override
+  void didUpdateWidget(covariant DailyTaskCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _controller.reset();
+    lastColorBackgroud = currentColorBackground;
+    lastColorBorder = currentColorBorder;
+    final (:borderColor, :cardBackGroundColor) = cardColors();
+
+    currentColorBackground = cardBackGroundColor;
+    currentColorBorder = borderColor;
+    
+
+    _controller.forward();
+  }
+
+
+  ({Color borderColor, Color cardBackGroundColor}) cardColors() {
+    if (widget.status.allDoneForToday(widget.task)) {
+      final color = Color.fromRGBO(66, 169, 111, 1);
+      return (
+        borderColor: color,
+        cardBackGroundColor: color.withValues(alpha: 0.15),
+      );
+    }
+
+    if (widget.task.schedule.occuringNow()) {
+      final color = Color.fromRGBO(45, 45, 226, 1);
+      return (
+        borderColor: color,
+        cardBackGroundColor: color.withValues(alpha: 0.15),
+      );
+    }
+    //If there is still a task to be done and the last instance today has passed
+    if (!(widget.task.schedule.next()?.isToday() ?? true)) {
+      final color = Color.fromRGBO(221, 49, 49, 1);
+      return (
+        borderColor: color,
+        cardBackGroundColor: color.withValues(alpha: 0.15),
+      );
+    }
+    return (borderColor: Colors.black, cardBackGroundColor: shadedContainer);
+  }
+
+  bool get activated => widget.task.notifies;
 
   void toggleTaskNotification(
     TaskContext taskContext,
@@ -49,54 +125,65 @@ class DailyTaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskContext = context.watch<TaskContext>();
     final langTextProv = context.watch<LanguageTextProvider>();
+
+    final borderColorTween = ColorTween(begin: lastColorBorder ?? currentColorBorder , end: currentColorBorder );
+    final backgroundColorTween = ColorTween(begin: lastColorBackgroud ?? currentColorBackground , end : currentColorBackground);
+
     return ElevatedContainer(
       innerPadding: isolatePadding,
       borderRadius: defBorderRadius,
       decoration: BoxDecoration(
-        color: cardBackGroundColor(),
-        border: Border.all(color: borderColor(), width: 1.0),
+        color: backgroundColorTween.lerp(_animationValue) ?? currentColorBackground,
+        border: Border.all(color: borderColorTween.lerp(_animationValue) ?? currentColorBorder, width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: .start,
         spacing: mediumSpacing,
         children: [
           Text(
-            task.label,
+            widget.task.label,
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: .start,
           ),
-          
+
           Text(
-            task.description,
+            widget.task.description,
             style: Theme.of(context).textTheme.titleMedium,
             textAlign: .start,
           ),
 
           Text(
-            langTextProv.rawTextes[task.schedule.typeName]!,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: lightText),
+            langTextProv.scheduleType(widget.task.schedule),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: lightText),
             textAlign: .start,
           ),
 
           const LightSeparator(),
 
           _InstanceTypeLabel(
-            instanceType: InstanceType.fromSchedule(task.schedule),
+            instanceType: InstanceType.fromSchedule(widget.task.schedule),
           ),
 
           const LightSeparator(),
 
-          TaskScheduleWidget(status: status, task: task,),
-           Row(
+          TaskScheduleWidget(status: widget.status, task: widget.task,),
+          Row(
             spacing: smallSpacing,
             mainAxisAlignment: .end,
             children: [
               IconToggleButton(
-                toggleCallback: () => toggleTaskNotification(taskContext, context, langTextProv, task),
-                activated: actiavated,
+                toggleCallback: () => toggleTaskNotification(
+                  taskContext,
+                  context,
+                  langTextProv,
+                  widget.task,
+                ),
+                activated: activated,
                 borderRadius: defBorderRadius,
                 size: Size.square(42.0),
-                iconData: actiavated ? Icons.alarm_on : Icons.alarm_off,
+                iconData: activated ? Icons.alarm_on : Icons.alarm_off,
               ),
             ],
           ),

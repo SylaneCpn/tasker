@@ -30,7 +30,7 @@ class DailyTasksList extends StatelessWidget {
           spacing: cardSpacing,
           crossAxisAlignment: .stretch,
           children: dailyTasks
-              .map((dt) => DailyTaskCard(task: dt, status: status))
+              .map((dt) => DailyTaskCard(key : ValueKey(dt.id), task: dt, status: status))
               .toList(),
         ),
       ),
