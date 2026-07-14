@@ -63,6 +63,24 @@ class TasksWrapper with JsonSerializable {
     ),
   );
 
+  Task? update(int id , {
+    String? description,
+    bool? notifies,
+    String? label,
+    Schedule? schedule,
+  }) {
+    final task = _tasks.where((tsk) => tsk.id == id).firstOrNull;
+    if (task == null) return null;
+
+    task.description = description ?? task.description;
+    task.notifies = notifies ?? task.notifies;
+    task.label = label ?? task.label;
+    task.schedule = schedule ?? task.schedule;
+    
+    return task;
+
+  }
+
   Task? remove(int id) {
     final index = _tasks.indexWhere((tsk) => tsk.id == id);
     if (index != -1) {

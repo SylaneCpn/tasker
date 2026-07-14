@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tasker/data/task_context.dart';
+import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
+import 'package:tasker/widgets/add_task_dialog.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget.dart';
 import 'package:tasker/widgets/views/main_page/greetings_card.dart';
 
@@ -13,7 +17,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  
   // Configured to rebuild the widget every minute
   Timer? _rebuildTimer;
 
@@ -37,9 +40,18 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final LanguageTextProvider langTextProv = context.watch();
+    final TaskContext taskContext = context.watch();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => showDialog(
+          fullscreenDialog: true,
+          context: context,
+          builder: (_) => AddTaskDialog(
+            langTextProv: langTextProv,
+            taskContext: taskContext,
+          ),
+        ),
         child: Icon(Icons.add),
       ),
       body: SingleChildScrollView(
@@ -47,7 +59,10 @@ class _MainPageState extends State<MainPage> {
           spacing: defaultSpacing,
           mainAxisAlignment: .center,
           children: [
-            Align(alignment: .topLeft, child: const GreetingsCard()),
+            Align(alignment: .topLeft, child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: const GreetingsCard(),
+            )),
             const DailyTasksWidget(),
             // Here so floating action button does't block some tasks
             const SizedBox(height: 50.0),

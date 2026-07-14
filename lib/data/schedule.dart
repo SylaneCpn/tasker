@@ -1,6 +1,7 @@
 import 'package:result/result.dart';
 import 'package:tasker/data/date_range.dart';
 import 'package:tasker/data/month.dart';
+import 'package:tasker/data/schedule_type.dart';
 import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/data/time_of_day_range.dart';
 import 'package:tasker/data/weekday.dart';
@@ -19,8 +20,6 @@ sealed class Schedule with JsonSerializable {
   TaskInstance? last();
   bool isToday();
   bool occuringNow();
-
-
 
   Iterable<TaskInstance> instancesForDay({
     required int year,
@@ -100,6 +99,12 @@ sealed class Schedule with JsonSerializable {
   }
 
   String get typeName;
+  ScheduleType get type => switch (this) {
+    DiscreteOccurences() => .discreteOccurences,
+    Weekly() => .weekly,
+    Monthly() => .monthly,
+    Yearly() => .yearly,
+  };
 }
 
 @deserializable
@@ -198,7 +203,7 @@ class DiscreteOccurences extends Schedule {
   }) => occurences.where(
     (occ) => occ.start.isSameDay(DateTime(year, month.monthOfYear(), day)),
   );
-  
+
   @override
   String get typeName => 'discreteOccurences';
 }
@@ -472,7 +477,7 @@ class Weekly extends Schedule {
           ),
         );
   }
-  
+
   @override
   String get typeName => 'weekly';
 }
@@ -554,16 +559,14 @@ class Monthly extends Schedule {
         .where(
           (e) =>
               e.key == candidateDay.day &&
-                  // For today then only get the occurences that have passed
-                  e.value.any((r) => r.isBefore(now.asTimeOfDay())),
+              // For today then only get the occurences that have passed
+              e.value.any((r) => r.isBefore(now.asTimeOfDay())),
         )
         .firstOrNull;
     while (targetOccurence == null) {
       candidateDay = candidateDay.subtract(Duration(days: 1));
       targetOccurence = occurences.entries
-          .where(
-            (e) => e.key == candidateDay.day && candidateDay.isToday(),
-          )
+          .where((e) => e.key == candidateDay.day && candidateDay.isToday())
           .firstOrNull;
     }
     final sortedRanges = targetOccurence.value
@@ -596,9 +599,7 @@ class Monthly extends Schedule {
     while (targetOccurence == null) {
       candidateDay = candidateDay.add(Duration(days: 1));
       targetOccurence = occurences.entries
-          .where(
-            (e) => e.key == candidateDay.day,
-          )
+          .where((e) => e.key == candidateDay.day)
           .firstOrNull;
     }
     final sortedRanges = targetOccurence.value
@@ -636,22 +637,23 @@ class Monthly extends Schedule {
     required int day,
   }) {
     final dateTime = DateTime(year, month.monthOfYear(), day);
-    return !range.contains(dateTime) ? Iterable.empty()
-    : occurences.entries
-        .where((e) => e.key == dateTime.day && range.contains(dateTime))
-        .expand(
-          (e) => e.value.map(
-            (r) => TaskInstance(
-              start: dateTime.copyWith(
-                hour: r.start.hour,
-                minute: r.start.minute,
-              ),
-              duration: r.duration,
-            ),
-          ),
-        );
+    return !range.contains(dateTime)
+        ? Iterable.empty()
+        : occurences.entries
+              .where((e) => e.key == dateTime.day && range.contains(dateTime))
+              .expand(
+                (e) => e.value.map(
+                  (r) => TaskInstance(
+                    start: dateTime.copyWith(
+                      hour: r.start.hour,
+                      minute: r.start.minute,
+                    ),
+                    duration: r.duration,
+                  ),
+                ),
+              );
   }
-  
+
   @override
   String get typeName => 'monthly';
 }
@@ -827,7 +829,7 @@ class Yearly extends Schedule {
           ),
         );
   }
-  
+
   @override
   String get typeName => 'yearly';
 }

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/data/schedule.dart';
+import 'package:tasker/data/schedule_type.dart';
 import 'package:tasker/extensions/language_formating_extensions.dart';
 import 'package:tasker/extensions/pad_for_clock.dart';
 
@@ -81,6 +82,11 @@ class LanguageTextProvider with ChangeNotifier {
   String get nextInstance => _txt("nextInstance") ?? "Next";
   String get prevInstance => _txt("prevInstance") ?? "Previously";
   String get neverInstance => _txt("neverInstance") ?? "No more instance.";
+  String get beNotified => _txt("beNotified") ?? "Be notified"; 
+  String get back => _txt("back") ?? "Back";
+  String get confirm => _txt("confirm") ?? "Confirm";
+  String get emptyInputText => _txt("emptyInputText") ?? "The input cannot be empty." ;
+  String get taskUpdated => _txt("taskUpdated") ?? "Tasks updated.";
   String get notificationActivated =>
       _txt("notificationActivated") ?? "You will be notified of :";
   String get notificationDeactivated =>
@@ -90,6 +96,10 @@ class LanguageTextProvider with ChangeNotifier {
   String get instancesToday => _txt("instancesToday") ?? "Instances Today";
   String get discreteOccurences =>
       _txt("discreteOccurences") ?? "Discrete Occurences";
+  String get addTask => _txt("addTask") ?? "Add Task";
+  String get label => _txt("label") ?? "Label";
+  String get description => _txt("description") ?? "Description";
+  String get schedule => _txt("schedule") ?? "Schedule";
   String get weekly => _txt("weekly") ?? "Weekly";
   String get monthly => _txt("monthly") ?? "Monthly";
   String get yearly => _txt("yearly") ?? "Yearly";
@@ -105,5 +115,12 @@ class LanguageTextProvider with ChangeNotifier {
     Weekly _ => weekly,
     Monthly() => monthly,
     Yearly() => yearly,
+  };
+
+  String scheduleTypeName(ScheduleType type) => switch(type) {
+    .discreteOccurences => discreteOccurences,
+    .weekly => weekly,
+    .monthly => monthly,
+    .yearly => yearly
   };
 }
