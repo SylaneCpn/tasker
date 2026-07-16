@@ -59,9 +59,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   void updateTaskContext(BuildContext context) {
-    if (_formKey.currentState!.validate()) {
+    final schedule = _scheduleBuilderKey.currentState!.buildSchedule();
+    if (_formKey.currentState!.validate() && schedule != null) {
       final wrapper = widget.taskContext.tasksWrapper;
-      final schedule = _scheduleBuilderKey.currentState!.buildSchedule();
+      
       //Update the task
       if (widget.baseTask != null) {
         wrapper.update(
@@ -176,7 +177,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 }
 
 mixin _ScheduleBuilder<T extends StatefulWidget> on State<T> {
-  Schedule buildSchedule();
+  Schedule? buildSchedule();
 }
 
 class _ScheduleBuilderWidget extends StatelessWidget {
@@ -223,7 +224,7 @@ class _DiscreteOccurencesBuilderWidgetState
   }
 
   @override
-  Schedule buildSchedule() {
+  Schedule? buildSchedule() {
     // TODO: implement buildSchedule
     throw UnimplementedError();
   }
@@ -245,7 +246,7 @@ class _WeeklyBuilderWidgetState extends State<_WeeklyBuilderWidget>
   }
 
   @override
-  Schedule buildSchedule() {
+  Schedule? buildSchedule() {
     // TODO: implement buildSchedule
     throw UnimplementedError();
   }
@@ -268,7 +269,7 @@ class _MonthlyBuilderWidgetState extends State<_MonthlyBuilderWidget>
   }
 
   @override
-  Schedule buildSchedule() {
+  Schedule? buildSchedule() {
     // TODO: implement buildSchedule
     throw UnimplementedError();
   }
@@ -291,7 +292,7 @@ class _YearlyBuilderWidgetState extends State<_YearlyBuilderWidget>
   }
 
   @override
-  Schedule buildSchedule() {
+  Schedule? buildSchedule() {
     // TODO: implement buildSchedule
     throw UnimplementedError();
   }
