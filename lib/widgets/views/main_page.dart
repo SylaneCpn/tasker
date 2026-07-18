@@ -59,10 +59,13 @@ class _MainPageState extends State<MainPage> {
           spacing: defaultSpacing,
           mainAxisAlignment: .center,
           children: [
-            Align(alignment: .topLeft, child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: const GreetingsCard(),
-            )),
+            Align(
+              alignment: .topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: const GreetingsCard(),
+              ),
+            ),
             const DailyTasksWidget(),
             // Here so floating action button does't block some tasks
             const SizedBox(height: 50.0),

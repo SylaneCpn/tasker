@@ -3,7 +3,7 @@ import 'package:tasker/utils/leap_year.dart';
 ///Enum for the months of the year.
 enum Month {
   january,
-  febuary,
+  february,
   march,
   april,
   may,
@@ -31,7 +31,7 @@ enum Month {
   /// Number of days in the month for a given year.
   int numberOfDays(int year) => switch(this) {
     Month.january => 31,
-    Month.febuary => isLeapYear(year) ? 29 : 28 ,
+    Month.february => isLeapYear(year) ? 29 : 28 ,
     Month.march => 31,
     Month.april => 30,
     Month.may => 31,

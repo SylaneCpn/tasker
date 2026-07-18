@@ -5,6 +5,7 @@ import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
+import 'package:tasker/widgets/common/date_picker.dart';
 import 'package:tasker/widgets/common/selectable_chip.dart';
 import 'package:tasker/widgets/common/with_title.dart';
 
@@ -94,7 +95,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      scrollable: true,
+      insetPadding: EdgeInsets.all(8.0),
+      scrollable: false,
       actions: [
         TextButton(
           onPressed: () => updateTaskContext(context),
@@ -106,71 +108,79 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         ),
       ],
       title: Text(widget.langTextProv.addTask),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          spacing: defaultSpacing,
-          mainAxisSize: .min,
-          children: [
-            WithTitle(
-              title: widget.langTextProv.label,
-              child: TextFormField(
-                validator: baseInputValidator,
-                controller: _labelController,
-                decoration: InputDecoration(
-                  focusColor: mainColor,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: mainColor),
-                  ),
-                ),
-              ),
-            ),
-
-            WithTitle(
-              title: widget.langTextProv.description,
-              child: TextFormField(
-                controller: _descriptionController,
-                validator: baseInputValidator,
-                decoration: InputDecoration(
-                  focusColor: mainColor,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: mainColor),
-                  ),
-                ),
-              ),
-            ),
-
-            WithTitle(
-              title: widget.langTextProv.schedule,
-              child: Wrap(
-                runSpacing: smallSpacing,
-                spacing: smallSpacing,
-                children: ScheduleType.values
-                    .map(
-                      (type) => SelectableChip(
-                        label: widget.langTextProv.scheduleTypeName(type),
-                        isSelected: scheduleType == type,
-                        onSelectCallback: () => setScheduleType(type),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-
-            Row(
-              mainAxisAlignment: .spaceBetween,
+      content: SizedBox(
+        height: MediaQuery.heightOf(context) * 0.75,
+        width: MediaQuery.widthOf(context) * 0.9,
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              spacing: defaultSpacing,
+              mainAxisSize: .min,
               children: [
-                Text(widget.langTextProv.beNotified),
-                Switch(value: beNotified, onChanged: setBeNotified),
+                WithTitle(
+                  title: widget.langTextProv.label,
+                  child: TextFormField(
+                    validator: baseInputValidator,
+                    controller: _labelController,
+                    decoration: InputDecoration(
+                      focusColor: mainColor,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: mainColor),
+                      ),
+                    ),
+                  ),
+                ),
+          
+                WithTitle(
+                  title: widget.langTextProv.description,
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    validator: baseInputValidator,
+                    decoration: InputDecoration(
+                      focusColor: mainColor,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: mainColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: [
+                    Text(widget.langTextProv.beNotified),
+                    Switch(value: beNotified, onChanged: setBeNotified),
+                  ],
+                ),
+          
+                WithTitle(
+                  title: widget.langTextProv.schedule,
+                  child: Wrap(
+                    runSpacing: smallSpacing,
+                    spacing: smallSpacing,
+                    children: ScheduleType.values
+                        .map(
+                          (type) => SelectableChip(
+                            label: widget.langTextProv.scheduleTypeName(type),
+                            isSelected: scheduleType == type,
+                            onSelectCallback: () => setScheduleType(type),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+          
+                
+          
+                _ScheduleBuilderWidget(
+                  langTextProv: widget.langTextProv,
+                  scheduleBuilderKey: _scheduleBuilderKey,
+                  scheduleType: scheduleType,
+                  baseSchedule: widget.baseTask?.schedule,
+                ),
               ],
             ),
-
-            _ScheduleBuilderWidget(
-              scheduleBuilderKey: _scheduleBuilderKey,
-              scheduleType: scheduleType,
-              baseSchedule: widget.baseTask?.schedule,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -182,13 +192,14 @@ mixin _ScheduleBuilder<T extends StatefulWidget> on State<T> {
 }
 
 class _ScheduleBuilderWidget extends StatelessWidget {
+  final LanguageTextProvider langTextProv;
   final GlobalKey<_ScheduleBuilder> scheduleBuilderKey;
   final ScheduleType scheduleType;
   final Schedule? baseSchedule;
 
   const _ScheduleBuilderWidget({
     required this.scheduleBuilderKey,
-    required this.scheduleType, this.baseSchedule,
+    required this.scheduleType, this.baseSchedule, required this.langTextProv,
   });
 
   @override
@@ -197,7 +208,7 @@ class _ScheduleBuilderWidget extends StatelessWidget {
     return switch (scheduleType) {
       ScheduleType.discreteOccurences => _DiscreteOccurencesBuilderWidget(
         key: scheduleBuilderKey,
-        baseSchedule: baseSchedule is DiscreteOccurences ? baseSchedule as DiscreteOccurences : null,
+        baseSchedule: baseSchedule is DiscreteOccurences ? baseSchedule as DiscreteOccurences : null, langTextProv: langTextProv,
       ),
       ScheduleType.weekly => _WeeklyBuilderWidget(key: scheduleBuilderKey, baseSchedule: baseSchedule is Weekly ? baseSchedule as Weekly : null,),
       ScheduleType.monthly => _MonthlyBuilderWidget(key: scheduleBuilderKey , baseSchedule: baseSchedule is Monthly ? baseSchedule as Monthly : null,),
@@ -209,8 +220,9 @@ class _ScheduleBuilderWidget extends StatelessWidget {
 class _DiscreteOccurencesBuilderWidget extends StatefulWidget {
 
   final DiscreteOccurences? baseSchedule;
+  final LanguageTextProvider langTextProv;
 
-  const _DiscreteOccurencesBuilderWidget({super.key, this.baseSchedule});
+  const _DiscreteOccurencesBuilderWidget({super.key, this.baseSchedule, required this.langTextProv});
   @override
   State<_DiscreteOccurencesBuilderWidget> createState() =>
       _DiscreteOccurencesBuilderWidgetState();
@@ -221,7 +233,12 @@ class _DiscreteOccurencesBuilderWidgetState
     with _ScheduleBuilder {
   @override
   Widget build(BuildContext context) {
-    return Placeholder();
+    final now = DateTime.now();
+    return Column(
+      children: [
+        DatePicker(langTextProv: widget.langTextProv,onDateSelected: (_) {})
+      ],
+    );
   }
 
   @override

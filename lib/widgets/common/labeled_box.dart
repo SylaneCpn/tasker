@@ -1,38 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:tasker/style/theme.dart';
 
-class SelectableChip extends StatefulWidget {
+class LabeledBox extends StatefulWidget {
   final String label;
   final bool isSelected;
+  final bool isDeactivated;
   final EdgeInsets? innerPadding;
   final VoidCallback? onSelectCallback;
   final BorderRadius? borderRadius;
   final Border? border;
 
-  const SelectableChip({
+  const LabeledBox({
     super.key,
     required this.label,
     required this.isSelected,
-    this.onSelectCallback, this.borderRadius, this.border, this.innerPadding,
+    this.onSelectCallback, this.borderRadius, this.border, this.innerPadding, required this.isDeactivated,
   });
 
   @override
-  State<SelectableChip> createState() => _SelectableChipState();
+  State<LabeledBox> createState() => _LabeledBoxState();
 }
 
-class _SelectableChipState extends State<SelectableChip>
+class _LabeledBoxState extends State<LabeledBox>
     with SingleTickerProviderStateMixin {
   bool? wasSelected;
+  bool? wasDeactivated;
   late final AnimationController _controller = .new(
     vsync: this,
     duration: Duration(milliseconds: 300),
   );
 
-  static Color textColor(bool selected) =>
+  static Color textColor({required bool selected , required bool deactivated}) =>
+      deactivated ? backgroundColor :
       selected ? backgroundColor : mainColor;
 
-  static Color containerColor(bool selected) =>
-      selected ? mainColor : backgroundColor;
+  static Color containerColor({required bool selected , required bool deactivated}) =>
+      deactivated ? deactivatedColor : selected ? mainColor : backgroundColor;
 
   @override
   void initState() {
@@ -48,8 +51,9 @@ class _SelectableChipState extends State<SelectableChip>
   }
 
   @override
-  void didUpdateWidget(covariant SelectableChip oldWidget) {
+  void didUpdateWidget(covariant LabeledBox oldWidget) {
     if (oldWidget.isSelected == widget.isSelected) return;
+    wasDeactivated = oldWidget.isDeactivated;
     wasSelected = oldWidget.isSelected;
     _controller.reset();
     _controller.forward();
@@ -68,18 +72,18 @@ class _SelectableChipState extends State<SelectableChip>
   @override
   Widget build(BuildContext context) {
     final textColorTween = ColorTween(
-      begin: textColor(wasSelected ?? false),
-      end: textColor(widget.isSelected),
+      begin: textColor(selected:  wasSelected ?? false, deactivated: wasDeactivated ?? false),
+      end: textColor(selected :widget.isSelected , deactivated:  widget.isDeactivated),
     );
     final containerColorTween = ColorTween(
-      begin: containerColor(wasSelected ?? false),
-      end: containerColor(widget.isSelected),
+      begin: containerColor(selected:  wasSelected ?? false , deactivated:  wasDeactivated ?? false),
+      end: containerColor(selected : widget.isSelected , deactivated:  widget.isDeactivated),
     );
     final containerAnimColor = containerColorTween.lerp(_controller.value)!;
     final textAnimColor = textColorTween.lerp(_controller.value)!;
 
     return GestureDetector(
-      onTap: widget.onSelectCallback,
+      onTap: widget.isDeactivated ? null : widget.onSelectCallback,
       child: Container(
         padding:widget.innerPadding ?? EdgeInsets.all(smallSpacing),
         decoration: BoxDecoration(
@@ -87,14 +91,13 @@ class _SelectableChipState extends State<SelectableChip>
           border: widget.border != null ? _borderWithSidesOf(widget.border!, mainColor) : Border.all(color: mainColor),
           borderRadius:widget.borderRadius ?? BorderRadius.circular(24.0),
         ),
-        child: Text(
-          widget.label,
-          textAlign: .center,
-          style: TextStyle(color: textAnimColor,),
+        child: Center(
+          child: Text(
+            widget.label,
+            style: TextStyle(color: textAnimColor,),
+          ),
         ),
       ),
     );
   }
 }
-
-

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tasker/data/date.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/data/schedule.dart';
 import 'package:tasker/data/schedule_type.dart';
@@ -66,6 +67,9 @@ class LanguageTextProvider with ChangeNotifier {
   String get taskLabel => _txt("taskLabel") ?? "Tasks";
   String get calendarLabel => _txt("calendarLabel") ?? "Calendar";
   String get optionsLabel => _txt("optionsLabel") ?? "Options";
+  String get day => _txt("day") ?? "Day";
+  String get month => _txt("month") ?? "Month";
+  String get year => _txt("year") ?? "Year";
   String get couldNotFetch =>
       _txt("couldNotFetch") ??
       "An Error occured, the file could not be fetched";
@@ -104,11 +108,17 @@ class LanguageTextProvider with ChangeNotifier {
   String get monthly => _txt("monthly") ?? "Monthly";
   String get yearly => _txt("yearly") ?? "Yearly";
 
-  String formatedDate(DateTime date) {
+  String formatedDateTime(DateTime date) {
     final DateTime(:year, month: monthAsInt, :day, :hour, :minute) = date;
     final month = Month.fromMonthOfYear(monthAsInt);
     return "$day ${month.asLangName(this)} $year @ ${hour.padForClock()}:${minute.padForClock()}";
   }
+
+  String formatedDate(Date date) {
+    final Date(:year, month: month, :day) = date;
+    return "$day ${month.asLangName(this)} $year";
+  }
+
 
   String scheduleType(Schedule schedule) => switch (schedule) {
     DiscreteOccurences _ => discreteOccurences,
