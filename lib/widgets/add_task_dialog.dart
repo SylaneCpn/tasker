@@ -21,7 +21,6 @@ class AddTaskDialog extends StatefulWidget {
     required this.taskContext,
   });
 
-
   @override
   State<AddTaskDialog> createState() => _AddTaskDialogState();
 }
@@ -64,7 +63,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     final schedule = _scheduleBuilderKey.currentState!.buildSchedule();
     if (_formKey.currentState!.validate() && schedule != null) {
       final wrapper = widget.taskContext.tasksWrapper;
-      
+
       //Update the task
       if (widget.baseTask != null) {
         wrapper.update(
@@ -94,6 +93,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final sectionTitleStyle = Theme.of(context).textTheme.headlineSmall;
     return AlertDialog(
       insetPadding: EdgeInsets.all(8.0),
       scrollable: false,
@@ -120,6 +120,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               children: [
                 WithTitle(
                   title: widget.langTextProv.label,
+                  titleStyle: sectionTitleStyle,
                   child: TextFormField(
                     validator: baseInputValidator,
                     controller: _labelController,
@@ -131,9 +132,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     ),
                   ),
                 ),
-          
+
                 WithTitle(
                   title: widget.langTextProv.description,
+                  titleStyle: sectionTitleStyle,
                   child: TextFormField(
                     controller: _descriptionController,
                     validator: baseInputValidator,
@@ -148,13 +150,17 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text(widget.langTextProv.beNotified),
+                    Text(
+                      widget.langTextProv.beNotified,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                     Switch(value: beNotified, onChanged: setBeNotified),
                   ],
                 ),
-          
+
                 WithTitle(
                   title: widget.langTextProv.schedule,
+                  titleStyle: sectionTitleStyle,
                   child: Wrap(
                     runSpacing: smallSpacing,
                     spacing: smallSpacing,
@@ -169,14 +175,15 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                         .toList(),
                   ),
                 ),
-          
-                
-          
-                _ScheduleBuilderWidget(
-                  langTextProv: widget.langTextProv,
-                  scheduleBuilderKey: _scheduleBuilderKey,
-                  scheduleType: scheduleType,
-                  baseSchedule: widget.baseTask?.schedule,
+
+                Padding(
+                  padding: smallPadding,
+                  child: _ScheduleBuilderWidget(
+                    langTextProv: widget.langTextProv,
+                    scheduleBuilderKey: _scheduleBuilderKey,
+                    scheduleType: scheduleType,
+                    baseSchedule: widget.baseTask?.schedule,
+                  ),
                 ),
               ],
             ),
@@ -199,30 +206,46 @@ class _ScheduleBuilderWidget extends StatelessWidget {
 
   const _ScheduleBuilderWidget({
     required this.scheduleBuilderKey,
-    required this.scheduleType, this.baseSchedule, required this.langTextProv,
+    required this.scheduleType,
+    this.baseSchedule,
+    required this.langTextProv,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return switch (scheduleType) {
       ScheduleType.discreteOccurences => _DiscreteOccurencesBuilderWidget(
         key: scheduleBuilderKey,
-        baseSchedule: baseSchedule is DiscreteOccurences ? baseSchedule as DiscreteOccurences : null, langTextProv: langTextProv,
+        baseSchedule: baseSchedule is DiscreteOccurences
+            ? baseSchedule as DiscreteOccurences
+            : null,
+        langTextProv: langTextProv,
       ),
-      ScheduleType.weekly => _WeeklyBuilderWidget(key: scheduleBuilderKey, baseSchedule: baseSchedule is Weekly ? baseSchedule as Weekly : null,),
-      ScheduleType.monthly => _MonthlyBuilderWidget(key: scheduleBuilderKey , baseSchedule: baseSchedule is Monthly ? baseSchedule as Monthly : null,),
-      ScheduleType.yearly => _YearlyBuilderWidget(key: scheduleBuilderKey, baseSchedule: baseSchedule is Yearly ? baseSchedule as Yearly : null,),
+      ScheduleType.weekly => _WeeklyBuilderWidget(
+        key: scheduleBuilderKey,
+        baseSchedule: baseSchedule is Weekly ? baseSchedule as Weekly : null,
+      ),
+      ScheduleType.monthly => _MonthlyBuilderWidget(
+        key: scheduleBuilderKey,
+        baseSchedule: baseSchedule is Monthly ? baseSchedule as Monthly : null,
+      ),
+      ScheduleType.yearly => _YearlyBuilderWidget(
+        key: scheduleBuilderKey,
+        baseSchedule: baseSchedule is Yearly ? baseSchedule as Yearly : null,
+      ),
     };
   }
 }
 
 class _DiscreteOccurencesBuilderWidget extends StatefulWidget {
-
   final DiscreteOccurences? baseSchedule;
   final LanguageTextProvider langTextProv;
 
-  const _DiscreteOccurencesBuilderWidget({super.key, this.baseSchedule, required this.langTextProv});
+  const _DiscreteOccurencesBuilderWidget({
+    super.key,
+    this.baseSchedule,
+    required this.langTextProv,
+  });
   @override
   State<_DiscreteOccurencesBuilderWidget> createState() =>
       _DiscreteOccurencesBuilderWidgetState();
@@ -234,9 +257,17 @@ class _DiscreteOccurencesBuilderWidgetState
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
+    final sectionTitleTheme = Theme.of(context).textTheme.titleLarge;
     return Column(
       children: [
-        DatePicker(langTextProv: widget.langTextProv,onDateSelected: (_) {})
+        WithTitle(
+          title: widget.langTextProv.day,
+          titleStyle: sectionTitleTheme,
+          child: DatePicker(
+            langTextProv: widget.langTextProv,
+            onDateSelected: (_) {},
+          ),
+        ),
       ],
     );
   }
@@ -271,7 +302,6 @@ class _WeeklyBuilderWidgetState extends State<_WeeklyBuilderWidget>
 }
 
 class _MonthlyBuilderWidget extends StatefulWidget {
-
   final Monthly? baseSchedule;
   const _MonthlyBuilderWidget({super.key, this.baseSchedule});
 
@@ -294,7 +324,6 @@ class _MonthlyBuilderWidgetState extends State<_MonthlyBuilderWidget>
 }
 
 class _YearlyBuilderWidget extends StatefulWidget {
-
   final Yearly? baseSchedule;
   const _YearlyBuilderWidget({super.key, this.baseSchedule});
 

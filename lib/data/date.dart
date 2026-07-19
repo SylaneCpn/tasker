@@ -11,9 +11,18 @@ class Date {
     required this.year,
   });
   factory Date({required int day, required Month month, required int year}) {
-    assert(day <= month.numberOfDays(year));
+    assert(Date.isValid(day: day, month: month, year: year));
     return Date._unchecked(day: day, month: month, year: year);
   }
+
+  static bool hasPassedOrInvalid({required int day, required Month month, required int year}) {
+    if (!Date.isValid(day: day, month: month, year: year)) {
+      return true;
+    }
+    return Date(day: day,month: month,year: year).hasPassed();
+  }
+
+  static bool isValid({required int day, required Month month, required int year}) => day <= month.numberOfDays(year);
 
   Date copyWith({int? day, Month? month, int? year}) => Date(
     day: day ?? this.day,

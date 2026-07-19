@@ -10,11 +10,11 @@ import 'package:tasker/widgets/common/segmented_buttons.dart';
 class DatePicker extends StatefulWidget {
   final LanguageTextProvider langTextProv;
   final Date? baseDate;
-  final void Function(Date) onDateSelected;
+  final void Function(Date)? onDateSelected;
 
   const DatePicker({
     super.key,
-    required this.onDateSelected,
+    this.onDateSelected,
     this.baseDate,
     required this.langTextProv,
   });
@@ -37,49 +37,63 @@ class _DatePickerState extends State<DatePicker> {
     selectorField = _DateSelectorField.values[idx];
   });
 
-  void setDate({int? day, Month? month, int? year}) => setState(() {
-    currentDate = currentDate.copyWith(day: day, month: month, year: year);
-  });
+  void setDate({int? day, Month? month, int? year}) {
+    setState(() {
+      currentDate = currentDate.copyWith(day: day, month: month, year: year);
+    });
+    widget.onDateSelected?.call(currentDate);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: .min,
-      spacing: mediumSpacing,
-      children: [
-        Text(widget.langTextProv.formatedDate(currentDate)),
+    return Container(
+      padding: EdgeInsets.all(defaultSpacing),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border.all(color: mainColor),
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        spacing: mediumSpacing,
+        children: [
+          Text(widget.langTextProv.formatedDate(currentDate)),
 
-        Align(
-          alignment: .center,
-          child: SegmentedButtons(
-            labels: _labels(widget.langTextProv),
-            selectedIndex: selectorField.index,
-            onIndexSelected: setIndex,
+          Align(
+            alignment: .center,
+            child: SegmentedButtons(
+              labels: _labels(widget.langTextProv),
+              selectedIndex: selectorField.index,
+              onIndexSelected: setIndex,
+            ),
           ),
-        ),
-
-        switch (selectorField) {
-          _DateSelectorField.day => _DaySelector(
-            selectedDay: currentDate.day,
-            currentMonth: currentDate.month,
-            currentYear: currentDate.year,
-            onSelectedDay: (selectedDay) => setDate(day: selectedDay),
+          Padding(
+            padding: EdgeInsetsGeometry.zero,
+            child: switch (selectorField) {
+              _DateSelectorField.day => _DaySelector(
+                selectedDay: currentDate.day,
+                currentMonth: currentDate.month,
+                currentYear: currentDate.year,
+                onSelectedDay: (selectedDay) => setDate(day: selectedDay),
+              ),
+              _DateSelectorField.month => _MonthSelector(
+                currentDay: currentDate.day,
+                selectedMonth: currentDate.month,
+                currentYear: currentDate.year,
+                langTextProv: widget.langTextProv,
+                onSelectedMonth: (selectedMonth) =>
+                    setDate(month: selectedMonth),
+              ),
+              _DateSelectorField.year => _YearSelector(
+                currentDay: currentDate.day,
+                currentMonth: currentDate.month,
+                selectedYear: currentDate.year,
+                onSelectedYear: (selectedYear) => setDate(year: selectedYear),
+              ),
+            },
           ),
-          _DateSelectorField.month => _MonthSelector(
-            currentDay: currentDate.day,
-            selectedMonth: currentDate.month,
-            currentYear: currentDate.year,
-            langTextProv: widget.langTextProv,
-            onSelectedMonth: (selectedMonth) => setDate(month: selectedMonth),
-          ),
-          _DateSelectorField.year => _YearSelector(
-            currentDay: currentDate.day,
-            currentMonth: currentDate.month,
-            selectedYear: currentDate.year,
-            onSelectedYear: (selectedYear) => setDate(year: selectedYear),
-          ),
-        },
-      ],
+        ],
+      ),
     );
   }
 }
@@ -153,11 +167,11 @@ class _MonthSelector extends StatelessWidget {
         children: Month.values
             .map(
               (m) => LabeledBox(
-                isDeactivated: Date(
+                isDeactivated: Date.hasPassedOrInvalid(
                   day: currentDay,
                   month: m,
                   year: currentYear,
-                ).hasPassed(),
+                ),
                 label: m.asLangName(langTextProv),
                 isSelected: selectedMonth == m,
                 onSelectCallback: () => onSelectedMonth?.call(m),
@@ -194,18 +208,18 @@ class _YearSelector extends StatelessWidget {
         mainAxisSpacing: smallSpacing,
         crossAxisSpacing: smallSpacing,
         children: List.generate(
-              200,
-              (i) => LabeledBox(
-                isDeactivated: Date(
-                  day: currentDay,
-                  month: currentMonth,
-                  year: selectedYear,
-                ).hasPassed(),
-                label:  (i + nowYear).toString(),
-                isSelected: selectedYear == (i + nowYear),
-                onSelectCallback: () => onSelectedYear?.call( i + nowYear),
-              ),
+          200,
+          (i) => LabeledBox(
+            isDeactivated: Date.hasPassedOrInvalid(
+              day: currentDay,
+              month: currentMonth,
+              year: i + nowYear,
             ),
+            label: (i + nowYear).toString(),
+            isSelected: selectedYear == (i + nowYear),
+            onSelectCallback: () => onSelectedYear?.call(i + nowYear),
+          ),
+        ),
       ),
     );
   }
