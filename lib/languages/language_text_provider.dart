@@ -70,6 +70,9 @@ class LanguageTextProvider with ChangeNotifier {
   String get day => _txt("day") ?? "Day";
   String get month => _txt("month") ?? "Month";
   String get year => _txt("year") ?? "Year";
+  String get timeOfDay => _txt("timeOfDay") ?? "Time of Day";
+  String get begin => _txt("begin") ?? "Begin";
+  String get end => _txt("end") ?? "End";
   String get couldNotFetch =>
       _txt("couldNotFetch") ??
       "An Error occured, the file could not be fetched";

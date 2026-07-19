@@ -7,6 +7,7 @@ import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/date_picker.dart';
 import 'package:tasker/widgets/common/selectable_chip.dart';
+import 'package:tasker/widgets/common/time_of_day_range_picker.dart';
 import 'package:tasker/widgets/common/with_title.dart';
 
 class AddTaskDialog extends StatefulWidget {
@@ -117,6 +118,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             child: Column(
               spacing: defaultSpacing,
               mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
+            
               children: [
                 WithTitle(
                   title: widget.langTextProv.label,
@@ -256,9 +259,11 @@ class _DiscreteOccurencesBuilderWidgetState
     with _ScheduleBuilder {
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    // final now = DateTime.now();
     final sectionTitleTheme = Theme.of(context).textTheme.titleLarge;
     return Column(
+      crossAxisAlignment: .stretch,
+      spacing: defaultSpacing,
       children: [
         WithTitle(
           title: widget.langTextProv.day,
@@ -267,6 +272,11 @@ class _DiscreteOccurencesBuilderWidgetState
             langTextProv: widget.langTextProv,
             onDateSelected: (_) {},
           ),
+        ),
+
+        WithTitle(
+          title: widget.langTextProv.timeOfDay,
+          child: TimeOfDayRangePicker(langTextProv: widget.langTextProv),
         ),
       ],
     );
