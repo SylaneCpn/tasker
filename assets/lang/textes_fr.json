@@ -6,6 +6,8 @@
     "day" : "Jour",
     "month" : "Mois",
     "year" : "Année",
+    "hour" : "Heure",
+    "minute" : "Minute",
     "timeOfDay" : "Heure de la journée",
     "strat" : "Début",
     "end" : "Fin",

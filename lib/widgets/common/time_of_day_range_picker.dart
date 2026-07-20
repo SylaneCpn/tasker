@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tasker/languages/language_text_provider.dart';
+import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/time_of_day_picker.dart';
 
 class TimeOfDayRangePicker extends StatelessWidget {
@@ -10,13 +11,18 @@ class TimeOfDayRangePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: smallSpacing,
       mainAxisAlignment: .center,
       children: [
         Expanded(
           child: SizedBox(
-            height: 400.0,
-            // width: MediaQuery.widthOf(context) * 0.8,
-            child: TimeOfDayPicker()),
+            height: MediaQuery.heightOf(context) * 0.4,
+            child: TimeOfDayPicker(langTextProv: langTextProv,)),
+        ),
+        Expanded(
+          child: SizedBox(
+            height: MediaQuery.heightOf(context) * 0.4,
+            child: TimeOfDayPicker(langTextProv: langTextProv,)),
         )
       ],
     );
