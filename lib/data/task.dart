@@ -1,5 +1,6 @@
 import 'package:result/result.dart';
 import 'package:tasker/data/schedule.dart';
+import 'package:tasker/extensions/string_to_duration.dart';
 import 'package:tasker/extensions/unwrap_or_throw_extension.dart';
 import 'package:tasker/meta/deserializable.dart';
 import 'package:tasker/utils/json_serializable.dart';
@@ -9,6 +10,7 @@ class Task with JsonSerializable {
   final int id;
   bool notifies;
   String label;
+  Duration? notifyBefore;
   String description;
   Schedule schedule;
 
@@ -18,6 +20,7 @@ class Task with JsonSerializable {
     required this.label,
     required this.description,
     required this.schedule,
+    this.notifyBefore
   });
 
   static Result<Task, FormatException> fromJson(Map<String, Object?> json) {
@@ -26,11 +29,12 @@ class Task with JsonSerializable {
       final description = json["description"] as String;
       final id = json["id"] as int;
       final notifies = json["notifies"] as bool;
+      final notifyBefore = (json["notifyBefore"] as String?)?.parseAsDuration().unwrapOrThrow();
       final schedule = Schedule.fromJson(
         json["schedule"] as Map<String, Object?>,
       ).unwrapOrThrow();
       return Ok(
-        Task(id : id, notifies: notifies, label: label, description: description, schedule: schedule),
+        Task(id : id, notifies: notifies, label: label, description: description, schedule: schedule , notifyBefore: notifyBefore),
       );
     } on Exception catch (e) {
       return Err(FormatException("Could not parse Task from $json because $e"));
@@ -48,7 +52,9 @@ class Task with JsonSerializable {
     asJson["notifies"] = notifies;
     asJson["label"] = label;
     asJson["description"] = description;
+    asJson["notifyBefore"] = notifyBefore?.toString();
     asJson["schedule"] = schedule.toJson();
+    
     return asJson;
   }
   

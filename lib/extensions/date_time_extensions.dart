@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasker/data/date.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/data/year_date.dart';
 
@@ -32,4 +33,7 @@ extension AsDateTime on TimeOfDay {
     final now = DateTime.now();
     return DateTime(year ?? now.year , month ?? now.month , day ?? now.day , hour , minute);
   }
+}
+extension AsDate on DateTime {
+  Date toDate() => Date.fromDateTime(this);
 }

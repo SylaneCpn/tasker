@@ -6,8 +6,9 @@ import 'package:tasker/mock/mock_schedule.dart';
 import 'package:test/test.dart';
 import 'package:tasker/data/schedule.dart';
 
+const pathPrefix = "test_ressources/schedule";
+const prettyJsonEncoder = JsonEncoder.withIndent(" ");
 void main() {
-  const pathPrefix = "test_ressources/schedule";
   const discretePath ="$pathPrefix/discrete_serialized.json";
   const weeklyPath = "$pathPrefix/weekly_serialized.json";
   const monthlyPath = "$pathPrefix/monthly_serialized.json";
@@ -17,7 +18,7 @@ void main() {
     test("Serialize then Deserialize DistinctOccurences", () async {
       final disOcc = mockDiscreteOccurences();
       final asJson = disOcc.toJson();
-      final asJsonString = json.encode(asJson);
+      final asJsonString = prettyJsonEncoder.convert(asJson);
       final outputFile = await File(
        discretePath,
       ).create(recursive: true);
@@ -31,7 +32,7 @@ void main() {
     test("Serialize then Deserialize Weekly", () async {
       final weekly = mockWeekly();
       final asJson = weekly.toJson();
-      final asJsonString = json.encode(asJson);
+      final asJsonString = prettyJsonEncoder.convert(asJson);
       final outputFile = await File(
         weeklyPath,
       ).create(recursive: true);
@@ -46,7 +47,7 @@ void main() {
     test("Serialize then Deserialize Monthly", () async {
       final monthly = mockMonthly();
       final asJson = monthly.toJson();
-      final asJsonString = json.encode(asJson);
+      final asJsonString = prettyJsonEncoder.convert(asJson);
       final outputFile = await File(
         monthlyPath,
       ).create(recursive: true);
@@ -59,7 +60,7 @@ void main() {
     test("Serialize then Deserialize Yearly", () async {
       final yearly = mockYearly();
       final asJson = yearly.toJson();
-      final asJsonString = json.encode(asJson);
+      final asJsonString = prettyJsonEncoder.convert(asJson);
       final outputFile = await File(
         yearlyPath,
       ).create(recursive: true);
