@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 
 class TimeOfDayPicker extends StatefulWidget {
   final int? baseHour;
   final int? baseMinute;
-  final LanguageTextProvider langTextProv;
 
-  const TimeOfDayPicker({super.key, this.baseHour, this.baseMinute, required this.langTextProv});
+  const TimeOfDayPicker({super.key, this.baseHour, this.baseMinute});
 
   @override
-  State<TimeOfDayPicker> createState() => _TimeOfDayPickerState();
+  State<TimeOfDayPicker> createState() => TimeOfDayPickerState();
 }
 
-class _TimeOfDayPickerState extends State<TimeOfDayPicker> {
+class TimeOfDayPickerState extends State<TimeOfDayPicker> {
   late final _hourController = CarouselController(
-    initialItem: _leadingFromClicked(clickedElement: widget.baseHour ?? 0, itemCount: 24) ,
+    initialItem: _leadingFromClicked(
+      clickedElement: widget.baseHour ?? 0,
+      itemCount: 24,
+    ),
   );
   late final _minuteController = CarouselController(
-    initialItem: _leadingFromClicked(clickedElement: widget.baseMinute ?? 0, itemCount: 60) ,
+    initialItem: _leadingFromClicked(
+      clickedElement: widget.baseMinute ?? 0,
+      itemCount: 60,
+    ),
   );
 
   static const _itemsPerView = 5;
@@ -60,10 +66,7 @@ class _TimeOfDayPickerState extends State<TimeOfDayPicker> {
   //   required int itemCount,
   // }) {
   //   controller.animateToItem(
-  //     _leadingFromClicked(
-  //       clickedElement: itemClicked,
-  //       itemCount: itemCount,
-  //     ),
+  //     _leadingFromClicked(clickedElement: itemClicked, itemCount: itemCount),
   //   );
   // }
 
@@ -83,12 +86,11 @@ class _TimeOfDayPickerState extends State<TimeOfDayPicker> {
   //   );
   // }
 
-  TimeOfDay widgetTimeOfDay() =>
-      TimeOfDay(hour: _hourIndex, minute: _minuteIndex);
+  TimeOfDay getTimeOfDay() => TimeOfDay(hour: _hourIndex, minute: _minuteIndex);
 
   @override
   Widget build(BuildContext context) {
-
+    final langTextProv = context.watch<LanguageTextProvider>();
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth * 0.4;
@@ -107,20 +109,17 @@ class _TimeOfDayPickerState extends State<TimeOfDayPicker> {
                   Expanded(
                     child: Padding(
                       padding: smallPadding,
-                      child: FittedBox(child: Text(widget.langTextProv.hour)),
+                      child: FittedBox(child: Text(langTextProv.hour)),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     height: height * 0.90,
                     child: CarouselView(
-                      // Disabeled because animation can't go back 
-                      // onTap: (value) => _animateToHour(
-                      //   itemClicked: value,
-                      // ),
+                      // Disabeled because animation can't go back
+                      // onTap: (value) => _animateToHour(itemClicked: value),
                       itemSnapping: true,
-                      onIndexChanged: (index) =>
-                          _onHourChanged(index),
+                      onIndexChanged: (index) => _onHourChanged(index),
                       backgroundColor: backgroundColor,
                       infinite: true,
                       controller: _hourController,
@@ -151,20 +150,17 @@ class _TimeOfDayPickerState extends State<TimeOfDayPicker> {
                   Expanded(
                     child: Padding(
                       padding: smallPadding,
-                      child: FittedBox(child: Text(widget.langTextProv.minute)),
+                      child: FittedBox(child: Text(langTextProv.minute)),
                     ),
                   ),
                   SizedBox(
                     width: width,
                     height: height * 0.90,
                     child: CarouselView(
-                      // Disabeled because animation can't go back 
-                      // onTap: (value) => _animateToMinute(
-                      //   itemClicked: value,
-                      // ),
+                      // Disabeled because animation can't go back
+                      // onTap: (value) => _animateToMinute(itemClicked: value),
                       itemSnapping: true,
-                      onIndexChanged: (index) =>
-                          _onMinuteChanged(index),
+                      onIndexChanged: (index) => _onMinuteChanged(index),
                       backgroundColor: backgroundColor,
                       infinite: true,
                       controller: _minuteController,

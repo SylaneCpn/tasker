@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tasker/data/schedule.dart';
 import 'package:tasker/data/schedule_type.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/data/task_context.dart';
+import 'package:tasker/data/task_instance.dart';
 import 'package:tasker/languages/language_text_provider.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/common/date_picker.dart';
@@ -12,15 +14,9 @@ import 'package:tasker/widgets/common/with_title.dart';
 
 class AddTaskDialog extends StatefulWidget {
   final Task? baseTask;
-  final LanguageTextProvider langTextProv;
   final TaskContext taskContext;
 
-  const AddTaskDialog({
-    super.key,
-    this.baseTask,
-    required this.langTextProv,
-    required this.taskContext,
-  });
+  const AddTaskDialog({super.key, this.baseTask, required this.taskContext});
 
   @override
   State<AddTaskDialog> createState() => _AddTaskDialogState();
@@ -53,14 +49,17 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
     });
   }
 
-  String? baseInputValidator(String? value) {
+  String? baseInputValidator(String? value, LanguageTextProvider langTextProv) {
     if (value == null || value.isEmpty) {
-      return widget.langTextProv.emptyInputText;
+      return langTextProv.emptyInputText;
     }
     return null;
   }
 
-  void updateTaskContext(BuildContext context) {
+  void updateTaskContext(
+    BuildContext context,
+    LanguageTextProvider langTextProv,
+  ) {
     final schedule = _scheduleBuilderKey.currentState!.buildSchedule();
     if (_formKey.currentState!.validate() && schedule != null) {
       final wrapper = widget.taskContext.tasksWrapper;
@@ -88,27 +87,28 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(widget.langTextProv.taskUpdated)));
+      ).showSnackBar(SnackBar(content: Text(langTextProv.taskUpdated)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final langTextProv = context.watch<LanguageTextProvider>();
     final sectionTitleStyle = Theme.of(context).textTheme.headlineSmall;
     return AlertDialog(
       insetPadding: EdgeInsets.all(8.0),
       scrollable: false,
       actions: [
         TextButton(
-          onPressed: () => updateTaskContext(context),
-          child: Text(widget.langTextProv.confirm),
+          onPressed: () => updateTaskContext(context, langTextProv),
+          child: Text(langTextProv.confirm),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(widget.langTextProv.back),
+          child: Text(langTextProv.back),
         ),
       ],
-      title: Text(widget.langTextProv.addTask),
+      title: Text(langTextProv.addTask),
       content: SizedBox(
         height: MediaQuery.heightOf(context) * 0.75,
         width: MediaQuery.widthOf(context) * 0.9,
@@ -119,13 +119,13 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
               spacing: defaultSpacing,
               mainAxisSize: .min,
               crossAxisAlignment: .stretch,
-            
+
               children: [
                 WithTitle(
-                  title: widget.langTextProv.label,
+                  title: langTextProv.label,
                   titleStyle: sectionTitleStyle,
                   child: TextFormField(
-                    validator: baseInputValidator,
+                    validator: (inp) => baseInputValidator(inp, langTextProv),
                     controller: _labelController,
                     decoration: InputDecoration(
                       focusColor: mainColor,
@@ -137,11 +137,11 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 ),
 
                 WithTitle(
-                  title: widget.langTextProv.description,
+                  title: langTextProv.description,
                   titleStyle: sectionTitleStyle,
                   child: TextFormField(
                     controller: _descriptionController,
-                    validator: baseInputValidator,
+                    validator: (inp) => baseInputValidator(inp, langTextProv),
                     decoration: InputDecoration(
                       focusColor: mainColor,
                       border: OutlineInputBorder(
@@ -154,7 +154,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                   mainAxisAlignment: .spaceBetween,
                   children: [
                     Text(
-                      widget.langTextProv.beNotified,
+                      langTextProv.beNotified,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     Switch(value: beNotified, onChanged: setBeNotified),
@@ -162,7 +162,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 ),
 
                 WithTitle(
-                  title: widget.langTextProv.schedule,
+                  title: langTextProv.schedule,
                   titleStyle: sectionTitleStyle,
                   child: Wrap(
                     runSpacing: smallSpacing,
@@ -170,7 +170,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     children: ScheduleType.values
                         .map(
                           (type) => SelectableChip(
-                            label: widget.langTextProv.scheduleTypeName(type),
+                            label: langTextProv.scheduleTypeName(type),
                             isSelected: scheduleType == type,
                             onSelectCallback: () => setScheduleType(type),
                           ),
@@ -182,7 +182,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 Padding(
                   padding: smallPadding,
                   child: _ScheduleBuilderWidget(
-                    langTextProv: widget.langTextProv,
                     scheduleBuilderKey: _scheduleBuilderKey,
                     scheduleType: scheduleType,
                     baseSchedule: widget.baseTask?.schedule,
@@ -202,7 +201,6 @@ mixin _ScheduleBuilder<T extends StatefulWidget> on State<T> {
 }
 
 class _ScheduleBuilderWidget extends StatelessWidget {
-  final LanguageTextProvider langTextProv;
   final GlobalKey<_ScheduleBuilder> scheduleBuilderKey;
   final ScheduleType scheduleType;
   final Schedule? baseSchedule;
@@ -211,7 +209,6 @@ class _ScheduleBuilderWidget extends StatelessWidget {
     required this.scheduleBuilderKey,
     required this.scheduleType,
     this.baseSchedule,
-    required this.langTextProv,
   });
 
   @override
@@ -222,7 +219,6 @@ class _ScheduleBuilderWidget extends StatelessWidget {
         baseSchedule: baseSchedule is DiscreteOccurences
             ? baseSchedule as DiscreteOccurences
             : null,
-        langTextProv: langTextProv,
       ),
       ScheduleType.weekly => _WeeklyBuilderWidget(
         key: scheduleBuilderKey,
@@ -242,13 +238,8 @@ class _ScheduleBuilderWidget extends StatelessWidget {
 
 class _DiscreteOccurencesBuilderWidget extends StatefulWidget {
   final DiscreteOccurences? baseSchedule;
-  final LanguageTextProvider langTextProv;
 
-  const _DiscreteOccurencesBuilderWidget({
-    super.key,
-    this.baseSchedule,
-    required this.langTextProv,
-  });
+  const _DiscreteOccurencesBuilderWidget({super.key, this.baseSchedule});
   @override
   State<_DiscreteOccurencesBuilderWidget> createState() =>
       _DiscreteOccurencesBuilderWidgetState();
@@ -257,35 +248,68 @@ class _DiscreteOccurencesBuilderWidget extends StatefulWidget {
 class _DiscreteOccurencesBuilderWidgetState
     extends State<_DiscreteOccurencesBuilderWidget>
     with _ScheduleBuilder {
+  final GlobalKey<TimeOfDayRangePickerState> _timeOfDayPickerKey = .new();
+  final GlobalKey<DatePickerState> _datePickerKey = .new();
+  final Set<TaskInstance> _occurences = {};
+
+  // TODO : Fix it to make it more robust.
+  void addOccurence() {
+    final date = _datePickerKey.currentState!.getDate();
+    final range = _timeOfDayPickerKey.currentState!.getRange();
+
+    // TODO : Add a visual indicator on the app saying it failed
+    if (range == null) {
+      print("Could not add occurence");
+    } else {
+      final duration = range.duration;
+      final startDate = DateTime(
+        date.year,
+        date.month.monthOfYear(),
+        date.day,
+        range.start.hour,
+        range.start.minute,
+      );
+      setState(() {
+        _occurences.add(TaskInstance(start: startDate, duration: duration));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // final now = DateTime.now();
+    final langTextProv = context.watch<LanguageTextProvider>();
     final sectionTitleTheme = Theme.of(context).textTheme.titleLarge;
     return Column(
       crossAxisAlignment: .stretch,
       spacing: defaultSpacing,
       children: [
+        // TODO : REMOVE FOR DEBUG PURPOSES
+        ..._occurences.map((occ) => Text(occ.toString())),
+
         WithTitle(
-          title: widget.langTextProv.day,
+          title: langTextProv.day,
           titleStyle: sectionTitleTheme,
-          child: DatePicker(
-            langTextProv: widget.langTextProv,
-            onDateSelected: (_) {},
-          ),
+          child: DatePicker(key: _datePickerKey),
         ),
 
         WithTitle(
-          title: widget.langTextProv.timeOfDay,
-          child: TimeOfDayRangePicker(langTextProv: widget.langTextProv),
+          title: langTextProv.timeOfDay,
+          child: TimeOfDayRangePicker(key: _timeOfDayPickerKey),
         ),
+        // TODO : Fix label
+        TextButton(onPressed: addOccurence, child: Text("Add")),
       ],
     );
   }
 
   @override
   Schedule? buildSchedule() {
-    // TODO: implement buildSchedule
-    throw UnimplementedError();
+    if (_occurences.isNotEmpty) {
+      return DiscreteOccurences(occurences: _occurences.toSet());
+    } else {
+      return null;
+    }
   }
 }
 

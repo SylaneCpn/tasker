@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tasker/data/date.dart';
 import 'package:tasker/data/month.dart';
 import 'package:tasker/extensions/language_formating_extensions.dart';
@@ -8,24 +9,17 @@ import 'package:tasker/widgets/common/labeled_box.dart';
 import 'package:tasker/widgets/common/segmented_buttons.dart';
 
 class DatePicker extends StatefulWidget {
-  final LanguageTextProvider langTextProv;
   final Date? baseDate;
-  final void Function(Date)? onDateSelected;
 
-  const DatePicker({
-    super.key,
-    this.onDateSelected,
-    this.baseDate,
-    required this.langTextProv,
-  });
+  const DatePicker({super.key, this.baseDate});
 
   @override
-  State<DatePicker> createState() => _DatePickerState();
+  State<DatePicker> createState() => DatePickerState();
 }
 
-class _DatePickerState extends State<DatePicker> {
+class DatePickerState extends State<DatePicker> {
   late Date currentDate = widget.baseDate ?? Date.now();
-  _DateSelectorField selectorField = .day;
+  _DateSelectorField _selectorField = .day;
 
   static List<String> _labels(LanguageTextProvider langTextProv) => [
     langTextProv.day,
@@ -33,19 +27,21 @@ class _DatePickerState extends State<DatePicker> {
     langTextProv.year,
   ];
 
-  void setIndex(int idx) => setState(() {
-    selectorField = _DateSelectorField.values[idx];
+  void _setIndex(int idx) => setState(() {
+    _selectorField = _DateSelectorField.values[idx];
   });
 
-  void setDate({int? day, Month? month, int? year}) {
+  void _setDate({int? day, Month? month, int? year}) {
     setState(() {
       currentDate = currentDate.copyWith(day: day, month: month, year: year);
     });
-    widget.onDateSelected?.call(currentDate);
   }
+
+  Date getDate() => currentDate;
 
   @override
   Widget build(BuildContext context) {
+    final langTextProv = context.watch<LanguageTextProvider>();
     return Container(
       padding: EdgeInsets.all(defaultSpacing),
       decoration: BoxDecoration(
@@ -57,38 +53,37 @@ class _DatePickerState extends State<DatePicker> {
         mainAxisSize: .min,
         spacing: mediumSpacing,
         children: [
-          Text(widget.langTextProv.formatedDate(currentDate)),
+          Text(langTextProv.formatedDate(currentDate)),
 
           Align(
             alignment: .center,
             child: SegmentedButtons(
-              labels: _labels(widget.langTextProv),
-              selectedIndex: selectorField.index,
-              onIndexSelected: setIndex,
+              labels: _labels(langTextProv),
+              selectedIndex: _selectorField.index,
+              onIndexSelected: _setIndex,
             ),
           ),
           Padding(
             padding: EdgeInsetsGeometry.zero,
-            child: switch (selectorField) {
+            child: switch (_selectorField) {
               _DateSelectorField.day => _DaySelector(
                 selectedDay: currentDate.day,
                 currentMonth: currentDate.month,
                 currentYear: currentDate.year,
-                onSelectedDay: (selectedDay) => setDate(day: selectedDay),
+                onSelectedDay: (selectedDay) => _setDate(day: selectedDay),
               ),
               _DateSelectorField.month => _MonthSelector(
                 currentDay: currentDate.day,
                 selectedMonth: currentDate.month,
                 currentYear: currentDate.year,
-                langTextProv: widget.langTextProv,
                 onSelectedMonth: (selectedMonth) =>
-                    setDate(month: selectedMonth),
+                    _setDate(month: selectedMonth),
               ),
               _DateSelectorField.year => _YearSelector(
                 currentDay: currentDate.day,
                 currentMonth: currentDate.month,
                 selectedYear: currentDate.year,
-                onSelectedYear: (selectedYear) => setDate(year: selectedYear),
+                onSelectedYear: (selectedYear) => _setDate(year: selectedYear),
               ),
             },
           ),
@@ -143,7 +138,6 @@ class _MonthSelector extends StatelessWidget {
   final int currentDay;
   final Month selectedMonth;
   final int currentYear;
-  final LanguageTextProvider langTextProv;
 
   final void Function(Month)? onSelectedMonth;
 
@@ -152,11 +146,11 @@ class _MonthSelector extends StatelessWidget {
     required this.selectedMonth,
     required this.currentYear,
     this.onSelectedMonth,
-    required this.langTextProv,
   });
 
   @override
   Widget build(BuildContext context) {
+    final langTextProv = context.watch<LanguageTextProvider>();
     return SizedBox(
       height: MediaQuery.heightOf(context) * 0.4,
       child: GridView.count(

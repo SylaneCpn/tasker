@@ -47,9 +47,9 @@ class _MainPageState extends State<MainPage> {
         onPressed: () => showDialog(
           fullscreenDialog: true,
           context: context,
-          builder: (_) => AddTaskDialog(
-            langTextProv: langTextProv,
-            taskContext: taskContext,
+          builder: (_) => ChangeNotifierProvider.value(
+            value: langTextProv,
+            child: AddTaskDialog(taskContext: taskContext),
           ),
         ),
         child: Icon(Icons.add),
@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
             Align(
               alignment: .topLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 8.0),
+                padding: isolatePadding,
                 child: const GreetingsCard(),
               ),
             ),
