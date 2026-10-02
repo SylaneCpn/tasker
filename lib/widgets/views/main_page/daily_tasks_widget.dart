@@ -7,6 +7,9 @@ import 'package:tasker/widgets/common/icon_toggle_button.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_list_layout_mode.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content.dart';
 
+export 'daily_tasks_widget/daily_tasks_content.dart';
+export 'daily_tasks_widget/daily_tasks_list_layout_mode.dart';
+
 class DailyTasksWidget extends StatefulWidget {
   const DailyTasksWidget({super.key});
 
@@ -58,4 +61,3 @@ class _DailyTasksWidgetState extends State<DailyTasksWidget> {
     );
   }
 }
-

@@ -9,6 +9,9 @@ import 'package:tasker/widgets/add_task_dialog.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget.dart';
 import 'package:tasker/widgets/views/main_page/greetings_card.dart';
 
+export 'main_page/daily_tasks_widget.dart';
+export 'main_page/greetings_card.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 

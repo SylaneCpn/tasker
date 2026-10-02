@@ -3,8 +3,14 @@ import 'package:tasker/data/daily_tasks_status.dart';
 import 'package:tasker/data/task.dart';
 import 'package:tasker/style/theme.dart';
 import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_list_layout_mode.dart';
-import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list/daily_task_card.dart';
-import 'package:tasker/widgets/views/main_page/daily_tasks_widget/daily_tasks_content/daily_tasks_list/done_last_tasks_list.dart';
+
+import 'daily_tasks_list/daily_task_card.dart';
+import 'daily_tasks_list/done_last_tasks_list.dart';
+
+export 'daily_tasks_list/daily_task_card.dart';
+export 'daily_tasks_list/daily_tasks_list_section.dart';
+export 'daily_tasks_list/done_last_tasks_list.dart';
+export 'daily_tasks_list/task_schedule_widget.dart';
 
 class DailyTasksList extends StatelessWidget {
   final List<Task> dailyTasks;
@@ -18,11 +24,8 @@ class DailyTasksList extends StatelessWidget {
     required this.layout,
   });
 
-  
-
   @override
   Widget build(BuildContext context) {
-
     return switch (layout) {
       .chronologicalOrder => Padding(
         padding: sectionPadding,
@@ -30,14 +33,17 @@ class DailyTasksList extends StatelessWidget {
           spacing: cardSpacing,
           crossAxisAlignment: .stretch,
           children: dailyTasks
-              .map((dt) => DailyTaskCard(key : ValueKey(dt.id), task: dt, status: status))
+              .map(
+                (dt) => DailyTaskCard(
+                  key: ValueKey(dt.id),
+                  task: dt,
+                  status: status,
+                ),
+              )
               .toList(),
         ),
       ),
-      .doneLast => DoneLastTasksList(
-        dailyTasks: dailyTasks,
-        status: status,
-      ),
+      .doneLast => DoneLastTasksList(dailyTasks: dailyTasks, status: status),
     };
   }
 }
